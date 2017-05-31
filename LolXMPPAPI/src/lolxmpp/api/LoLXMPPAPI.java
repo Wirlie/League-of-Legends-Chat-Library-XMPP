@@ -67,7 +67,7 @@ public class LoLXMPPAPI {
 				xmppClient.send(new Presence(Presence.Show.CHAT));
 				loginResult = LoginResult.AUTH_SUCCESS;
 				
-				addXmppClientListeners();
+				setupAPI();
 				
 				return true;
 			} catch (XmppException e) {
@@ -86,7 +86,7 @@ public class LoLXMPPAPI {
 		return loginResult;
 	}
 	
-	private void addXmppClientListeners() {
+	private void setupAPI() {
 		eventsThreadPool = Executors.newFixedThreadPool(1);
 		eventsThreadPool.execute(() -> {
 			RosterManager roster = xmppClient.getManager(RosterManager.class);
