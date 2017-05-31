@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -29,6 +30,8 @@ public class LoLXMPPAPI {
 	private List<MessageListener> messageListeners = new ArrayList<MessageListener>();
 	private ExecutorService  eventsThreadPool = null;
 	private Map<Jid, Friend> friends = new HashMap<Jid, Friend>();
+	private boolean ready = false;
+	private List<Consumer<Void>> readyListeners = new ArrayList<Consumer<Void>>();
 	
 	public LoLXMPPAPI(ChatRegion region) {
 		this.region = region;
@@ -116,7 +119,18 @@ public class LoLXMPPAPI {
 					}
 				}
 			});
+			
+			ready = true;
+			notifyApiReady();
 		});
+	}
+	
+	private void notifyApiReady() {
+		for(Consumer<Void> c : readyListeners) {
+			c.accept(null);
+		}
+		
+		readyListeners.clear();
 	}
 	
 	public void addMessageListener(MessageListener listener) {
@@ -131,6 +145,18 @@ public class LoLXMPPAPI {
 		}
 		
 		return null;
+	}
+	
+	public boolean isReady() {
+		return ready;
+	}
+
+	public void onReady(Consumer<Void> e) {
+		if(isReady()) {
+			e.accept(null);
+		} else {
+			readyListeners.add(e);
+		}
 	}
 
 }
