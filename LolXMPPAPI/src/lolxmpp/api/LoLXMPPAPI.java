@@ -28,7 +28,7 @@ public class LoLXMPPAPI {
 	private LoginResult loginResult = LoginResult.NOT_LOGGED;
 	private ChatRegion region;
 	private XmppClient xmppClient;
-	private List<MessageListener> messageListeners = new ArrayList<MessageListener>();
+	private List<FriendListener> friendListeners = new ArrayList<FriendListener>();
 	private ExecutorService  eventsThreadPool = null;
 	private Map<Jid, Friend> friends = new HashMap<Jid, Friend>();
 	private boolean ready = false;
@@ -116,8 +116,8 @@ public class LoLXMPPAPI {
 			
 			//Add Incoming Message Listener
 			xmppClient.addInboundMessageListener(e -> {
-				synchronized(messageListeners) {
-					for(MessageListener listener : messageListeners) {
+				synchronized(friendListeners) {
+					for(FriendListener listener : friendListeners) {
 						
 					}
 				}
@@ -137,8 +137,8 @@ public class LoLXMPPAPI {
 		readyListeners.clear();
 	}
 	
-	public void addMessageListener(MessageListener listener) {
-		messageListeners.add(listener);
+	public void addFriendListener(FriendListener listener) {
+		friendListeners.add(listener);
 	}
 	
 	public Friend getFriendByName(String name) {
