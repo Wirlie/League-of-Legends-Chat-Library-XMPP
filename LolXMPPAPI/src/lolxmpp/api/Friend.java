@@ -27,6 +27,7 @@ import org.jdom.input.SAXBuilder;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.Presence.Show;
 import rocks.xmpp.im.roster.model.Contact;
 
 public class Friend {
@@ -34,6 +35,7 @@ public class Friend {
 	private Contact contact;
 	private XmppClient client;
 	private boolean isOnline = false;
+	private FriendShow show = FriendShow.OFFLINE;
 
 	protected Friend(XmppClient client, Contact contact) {
 		this.contact = contact;
@@ -41,6 +43,12 @@ public class Friend {
 	}
 
 	protected void updatePresence(Presence presence) {
+		Show sw = presence.getShow();
+		if(sw != null) {
+			isOnline = true;
+			show = FriendShow.from(sw);
+		}
+		
 		System.out.println(contact.getJid());
 		System.out.println(contact.getName());
 		System.out.println(presence.getStatus());
@@ -77,6 +85,14 @@ public class Friend {
 	
 	public String getName() {
 		return contact.getName();
+	}
+	
+	public boolean isOnline() {
+		return isOnline;
+	}
+	
+	public FriendShow getShow() {
+		return show;
 	}
 
 }
