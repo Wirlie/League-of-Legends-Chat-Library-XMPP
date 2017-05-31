@@ -53,8 +53,8 @@ public class LoLXMPPAPI {
 			
 			xmppClient = XmppClient.create("pvp.net", configuration, tcpConfiguration);
 			
+			//Try ChatServer connection
 			try {
-				//falló la conexión con el cliente
 				xmppClient.connect();
 			} catch (XmppException e) {
 				e.printStackTrace();
@@ -62,15 +62,17 @@ public class LoLXMPPAPI {
 				return false;
 			}
 			
+			//Try auth
 			try {
 				xmppClient.login(username, "AIR_" + password, "xiff");
+				//ok, show as available for chat (probably this will be changed after)
 				xmppClient.send(new Presence(Presence.Show.CHAT));
 				loginResult = LoginResult.AUTH_SUCCESS;
-				
+				//API setup
 				setupAPI();
-				
 				return true;
 			} catch (XmppException e) {
+				//Auth failed
 				e.printStackTrace();
 				loginResult = LoginResult.AUTH_FAILED;
 			}
@@ -91,12 +93,12 @@ public class LoLXMPPAPI {
 		eventsThreadPool.execute(() -> {
 			RosterManager roster = xmppClient.getManager(RosterManager.class);
 			
-			//Cargar contactos
+			//Read roster contacts
 			for(Contact contact : roster.getContacts()) {
 				friends.put(contact.getJid(), new Friend(xmppClient, contact));
 			}
 			
-			//Listador de presencias
+			//Add Incoming Presence Listener
 			xmppClient.addInboundPresenceListener(e -> {
 				Presence presence = e.getPresence();
 				Contact contact = roster.getContact(presence.getFrom());
@@ -112,7 +114,7 @@ public class LoLXMPPAPI {
 				}
 			});
 			
-			//Listador de mensajes
+			//Add Incoming Message Listener
 			xmppClient.addInboundMessageListener(e -> {
 				synchronized(messageListeners) {
 					for(MessageListener listener : messageListeners) {
@@ -121,6 +123,7 @@ public class LoLXMPPAPI {
 				}
 			});
 			
+			//Notify API is ready for use
 			ready = true;
 			notifyApiReady();
 		});
