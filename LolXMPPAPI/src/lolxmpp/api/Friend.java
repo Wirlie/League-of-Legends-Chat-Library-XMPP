@@ -35,7 +35,7 @@ public class Friend {
 	private Contact contact;
 	private XmppClient client;
 	private boolean isOnline = false;
-	private FriendShow show = FriendShow.OFFLINE;
+	private ChatState show = ChatState.OFFLINE;
 
 	protected Friend(XmppClient client, Contact contact) {
 		this.contact = contact;
@@ -46,7 +46,7 @@ public class Friend {
 		Show sw = presence.getShow();
 		if(sw != null) {
 			isOnline = true;
-			show = FriendShow.from(sw);
+			show = ChatState.from(sw);
 		}
 		
 		System.out.println(contact.getJid());
@@ -91,7 +91,7 @@ public class Friend {
 		return isOnline;
 	}
 	
-	public FriendShow getShow() {
+	public ChatState getChatState() {
 		return show;
 	}
 

@@ -2,7 +2,7 @@ package lolxmpp.api;
 
 import rocks.xmpp.core.stanza.model.Presence.Show;
 
-public enum FriendShow {
+public enum ChatState {
 	CHAT,
 	DO_NOT_DISTURB,
 	AWAY,
@@ -10,19 +10,19 @@ public enum FriendShow {
 	OFFLINE
 	;
 
-	public static FriendShow from(Show sw) {
+	public static ChatState from(Show sw) {
 		switch(sw) {
 			case AWAY:
-				return FriendShow.AWAY;
+				return ChatState.AWAY;
 			case CHAT:
-				return FriendShow.CHAT;
+				return ChatState.CHAT;
 			case XA:
-				return FriendShow.AWAY;
+				return ChatState.AWAY;
 			case DND:
-				return FriendShow.DO_NOT_DISTURB;
+				return ChatState.DO_NOT_DISTURB;
 			default:
 				//this shouldn't never happen
-				return FriendShow.MOBILE;
+				return ChatState.MOBILE;
 		}
 	}
 
