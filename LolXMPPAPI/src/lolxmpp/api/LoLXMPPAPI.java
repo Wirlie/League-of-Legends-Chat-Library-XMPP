@@ -19,6 +19,7 @@ import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
@@ -105,7 +106,14 @@ public class LoLXMPPAPI {
 				
 				if(contact != null) {
 					if(friends.containsKey(contact.getJid())) {
-						friends.get(contact.getJid()).updatePresence(e.getPresence());
+						Friend f = friends.get(contact.getJid());
+						f.updatePresence(e.getPresence());
+						
+						synchronized(friendListeners) {
+							friendListeners.forEach(listener -> {
+								listener.onFriendStateChange(f);
+							});
+						}
 					} else {
 						Friend friend = new Friend(xmppClient, contact);
 						friend.updatePresence(e.getPresence());
@@ -117,9 +125,15 @@ public class LoLXMPPAPI {
 			//Add Incoming Message Listener
 			xmppClient.addInboundMessageListener(e -> {
 				synchronized(friendListeners) {
-					for(FriendListener listener : friendListeners) {
-						
-					}
+					friendListeners.forEach(listener -> {
+						Message msg = e.getMessage();
+						Friend f = getFriendByJid(msg.getFrom());
+						if(f == null) {
+							System.err.println("Something is wrong! Incoming message from unknown friend.");
+						} else {
+							listener.onMessage(new FriendMessage(f, msg.getBodies()));
+						}
+					});
 				}
 			});
 			
@@ -139,6 +153,10 @@ public class LoLXMPPAPI {
 	
 	public void addFriendListener(FriendListener listener) {
 		friendListeners.add(listener);
+	}
+	
+	private Friend getFriendByJid(Jid jid) {
+		return friends.get(jid);
 	}
 	
 	public Friend getFriendByName(String name) {
