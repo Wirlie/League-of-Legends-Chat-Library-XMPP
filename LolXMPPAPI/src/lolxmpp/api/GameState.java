@@ -28,6 +28,8 @@ public enum GameState {
 	IN_GAME("inGame"),
 	SPECTATING("spectating"),
 	MOBILE("mobile"),
+	HOSTING_NORMAL_GAME("hostingNormalGame"),
+	IN_QUEUE("inQueue")
 	;
 	
 	private String xmlValue;
