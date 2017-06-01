@@ -122,7 +122,7 @@ public class LoLXMPPAPI {
 			
 			//Read roster contacts
 			for(Contact contact : roster.getContacts()) {
-				friends.put(contact.getJid().getLocal(), new Friend(xmppClient, contact));
+				friends.put(contact.getJid().getLocal(), new Friend(this, contact));
 			}
 			
 			//Add Incoming Presence Listener
@@ -143,7 +143,7 @@ public class LoLXMPPAPI {
 							});
 						}
 					} else {
-						Friend friend = new Friend(xmppClient, contact);
+						Friend friend = new Friend(this, contact);
 						friend.updatePresence(e.getPresence());
 						friends.put(contact.getJid().getLocal(), friend);
 					}
@@ -259,6 +259,22 @@ public class LoLXMPPAPI {
 		}
 		
 		return list;
+	}
+	
+	public XmppClient getXMPPClient() {
+		return xmppClient;
+	}
+	
+	protected void handleFriendJoinEvent(Friend friend) {
+		for(FriendJoinListener listener : friendJoinListeners) {
+			listener.onFriendJoin(friend);
+		}
+	}
+	
+	protected void handleFriendLeaveEvent(Friend friend) {
+		for(FriendLeaveListener listener : friendLeaveListeners) {
+			listener.onFriendLeave(friend);
+		}
 	}
 
 }

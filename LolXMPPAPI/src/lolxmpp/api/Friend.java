@@ -43,15 +43,14 @@ import rocks.xmpp.im.roster.model.Contact;
 public class Friend {
 	
 	private Contact contact;
-	private XmppClient client;
+	private LoLXMPPAPI api;
 	private boolean isOnline = false;
 	private ChatState show = ChatState.OFFLINE;
 	private GameState gameState = null;
 	private ProfileIcon profileIcon = new ProfileIcon(0);
 
-	protected Friend(XmppClient client, Contact contact) {
+	protected Friend(LoLXMPPAPI api, Contact contact) {
 		this.contact = contact;
-		this.client = client;
 	}
 
 	protected void updatePresence(Presence presence) {
@@ -63,8 +62,6 @@ public class Friend {
 				show = ChatState.MOBILE;
 				gameState = GameState.MOBILE;
 			}
-			
-			isOnline = true;
 			
 			String status = presence.getStatus();
 			if(status != null) {
@@ -96,13 +93,24 @@ public class Friend {
 					gameState = GameState.OUT_OF_GAME;
 				}
 			}
+			
+			if(!isOnline) {
+				isOnline = true;
+				api.handleFriendJoinEvent(this);
+			}
 		} else {
-			isOnline = false;
 			show = ChatState.OFFLINE;
+
+			if(isOnline) {
+				isOnline = false;
+				api.handleFriendLeaveEvent(this);
+			}
 		}
 	}
 	
 	public boolean sendMessage(String message) {
+		XmppClient client = api.getXMPPClient();
+		
 		if(client.isConnected()) {
 			Message xmppMsg = new Message(contact.getJid(), Message.Type.CHAT, message);
 			client.sendMessage(xmppMsg);
