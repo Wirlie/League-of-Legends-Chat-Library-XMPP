@@ -51,6 +51,7 @@ public class Friend {
 
 	protected Friend(LoLXMPPAPI api, Contact contact) {
 		this.contact = contact;
+		this.api = api;
 	}
 
 	protected void updatePresence(Presence presence) {
