@@ -29,7 +29,8 @@ public enum GameState {
 	SPECTATING("spectating"),
 	MOBILE("mobile"),
 	HOSTING_NORMAL_GAME("hostingNormalGame"),
-	IN_QUEUE("inQueue")
+	IN_QUEUE("inQueue"),
+	HOSTING_RANKED_GAME("hostingRankedGame"),
 	;
 	
 	private String xmlValue;
