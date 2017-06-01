@@ -22,6 +22,6 @@ public interface FriendListener {
 
 	void onMessage(FriendMessage message);
 
-	void onFriendStateChange(Friend friend);
+	void onFriendStatusChange(Friend friend);
 	
 }

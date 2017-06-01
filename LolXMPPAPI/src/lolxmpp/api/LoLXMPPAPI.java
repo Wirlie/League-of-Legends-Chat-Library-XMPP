@@ -131,7 +131,7 @@ public class LoLXMPPAPI {
 						
 						synchronized(friendListeners) {
 							friendListeners.forEach(listener -> {
-								listener.onFriendStateChange(f);
+								listener.onFriendStatusChange(f);
 							});
 						}
 					} else {
