@@ -67,7 +67,7 @@ public class LoLXMPPAPI {
 				    .build();
 			
 			XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                    .debugger(ConsoleDebugger.class)
+                    //.debugger(ConsoleDebugger.class)
                     .build();
 			
 			xmppClient = XmppClient.create("pvp.net", configuration, tcpConfiguration);
