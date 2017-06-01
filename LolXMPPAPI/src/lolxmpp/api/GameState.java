@@ -27,6 +27,7 @@ public enum GameState {
 	CHAMPION_SELECT("championSelect"),
 	IN_GAME("inGame"),
 	SPECTATING("spectating"),
+	MOBILE("mobile"),
 	;
 	
 	private String xmlValue;

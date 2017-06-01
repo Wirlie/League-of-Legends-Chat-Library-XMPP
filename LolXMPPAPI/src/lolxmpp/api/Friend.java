@@ -59,6 +59,7 @@ public class Friend {
 				show = ChatState.from(sw);
 			} else {
 				show = ChatState.MOBILE;
+				gameState = GameState.MOBILE;
 			}
 			
 			isOnline = true;
