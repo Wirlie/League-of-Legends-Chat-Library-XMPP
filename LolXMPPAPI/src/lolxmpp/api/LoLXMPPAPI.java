@@ -50,6 +50,7 @@ public class LoLXMPPAPI {
 	private ExecutorService  eventsThreadPool = null;
 	private Map<String, Friend> friends = new HashMap<String, Friend>();
 	private boolean ready = false;
+	private boolean delaying = false;
 	private List<Consumer<Void>> readyListeners = new ArrayList<Consumer<Void>>();
 	
 	public LoLXMPPAPI(ChatRegion region) {
@@ -118,6 +119,8 @@ public class LoLXMPPAPI {
 			
 			//Add Incoming Presence Listener
 			xmppClient.addInboundPresenceListener(e -> {
+				notifyApiReady();
+				
 				Presence presence = e.getPresence();
 				Contact contact = roster.getContact(presence.getFrom());
 				
@@ -153,19 +156,32 @@ public class LoLXMPPAPI {
 					});
 				}
 			});
-			
-			//Notify API is ready for use
-			ready = true;
-			notifyApiReady();
 		});
 	}
 	
 	private void notifyApiReady() {
-		for(Consumer<Void> c : readyListeners) {
-			c.accept(null);
+		if(delaying || ready) {
+			return;
 		}
 		
-		readyListeners.clear();
+		delaying = true;
+		
+		new Thread() {
+			public void run() {
+				try {
+					sleep(2000L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				for(Consumer<Void> c : readyListeners) {
+					c.accept(null);
+				}
+				
+				readyListeners.clear();
+				ready = true;
+			};
+		}.start();
 	}
 	
 	public void addFriendListener(FriendListener listener) {
