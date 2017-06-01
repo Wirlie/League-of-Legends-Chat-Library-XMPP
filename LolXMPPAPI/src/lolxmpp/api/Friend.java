@@ -46,7 +46,7 @@ public class Friend {
 	private LoLXMPPAPI api;
 	private boolean isOnline = false;
 	private ChatState show = ChatState.OFFLINE;
-	private GameState gameState = null;
+	private GameStatus gameState = null;
 	private ProfileIcon profileIcon = new ProfileIcon(0);
 
 	protected Friend(LoLXMPPAPI api, Contact contact) {
@@ -60,7 +60,7 @@ public class Friend {
 				show = ChatState.from(sw);
 			} else {
 				show = ChatState.MOBILE;
-				gameState = GameState.MOBILE;
+				gameState = GameStatus.MOBILE;
 			}
 			
 			String status = presence.getStatus();
@@ -77,7 +77,7 @@ public class Friend {
 					
 					try {
 						XPathExpression expr = path.compile("body/gameStatus");
-						gameState = GameState.fromXmlValue(expr.evaluate(document));
+						gameState = GameStatus.fromXmlValue(expr.evaluate(document));
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
 					}
@@ -90,7 +90,7 @@ public class Friend {
 					}
 				} catch (ParserConfigurationException | SAXException | IOException e) {
 					e.printStackTrace();
-					gameState = GameState.OUT_OF_GAME;
+					gameState = GameStatus.OUT_OF_GAME;
 				}
 			}
 			
@@ -133,7 +133,7 @@ public class Friend {
 		return show;
 	}
 	
-	public GameState getGameState() {
+	public GameStatus getGameState() {
 		return gameState;
 	}
 	

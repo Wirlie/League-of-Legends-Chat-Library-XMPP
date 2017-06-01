@@ -22,25 +22,29 @@ package lolxmpp.api;
  * @author wirlie
  *
  */
-public enum GameState {
+public enum GameStatus {
+	TEAM_SELECT("teamSelect"),
+	HOSTING_NORMAL_GAME("hostingNormalGame"),
+	HOSTING_PRACTICE_GAME("hostingPracticeGame"),
+	HOSTING_RANKED_GAME("hostingRankedGame"),
+	HOSTING_COOP_VS_AI_GAME("hostingCoopVsAIGame"),
+	IN_QUEUE("inQueue"),
+	SPECTATING("spectating"),
 	OUT_OF_GAME("outOfGame"),
 	CHAMPION_SELECT("championSelect"),
 	IN_GAME("inGame"),
-	SPECTATING("spectating"),
 	MOBILE("mobile"),
-	HOSTING_NORMAL_GAME("hostingNormalGame"),
-	IN_QUEUE("inQueue"),
-	HOSTING_RANKED_GAME("hostingRankedGame"),
+	TUTORIAL("tutorial"),
 	;
 	
 	private String xmlValue;
 	
-	GameState(String xmlValue) {
+	GameStatus(String xmlValue) {
 		this.xmlValue = xmlValue;
 	}
 	
-	public static GameState fromXmlValue(String xmlValue) {
-		for(GameState state : values()) {
+	public static GameStatus fromXmlValue(String xmlValue) {
+		for(GameStatus state : values()) {
 			if(state.xmlValue.equalsIgnoreCase(xmlValue)) {
 				return state;
 			}
@@ -48,6 +52,6 @@ public enum GameState {
 		
 		System.err.println("Unknown game state: " + xmlValue);
 		
-		return GameState.OUT_OF_GAME;
+		return GameStatus.OUT_OF_GAME;
 	}
 }
