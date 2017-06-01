@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -35,6 +34,7 @@ import lolxmpp.api.listeners.FriendJoinListener;
 import lolxmpp.api.listeners.FriendLeaveListener;
 import lolxmpp.api.listeners.FriendStatusListener;
 import lolxmpp.api.listeners.MessageListener;
+import lolxmpp.api.util.SimpleAction;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
@@ -55,7 +55,7 @@ public class LoLXMPPAPI {
 	private boolean ready = false;
 	private boolean delaying = false;
 	
-	private List<Consumer<Void>> readyListeners = new ArrayList<Consumer<Void>>();
+	private List<SimpleAction> readyListeners = new ArrayList<SimpleAction>();
 	private List<MessageListener> messageListeners = new ArrayList<MessageListener>();
 	private List<FriendStatusListener> friendStatusListeners = new ArrayList<FriendStatusListener>();
 	private List<FriendJoinListener> friendJoinListeners = new ArrayList<FriendJoinListener>();
@@ -183,8 +183,8 @@ public class LoLXMPPAPI {
 					e.printStackTrace();
 				}
 				
-				for(Consumer<Void> c : readyListeners) {
-					c.accept(null);
+				for(SimpleAction c : readyListeners) {
+					c.doAction();
 				}
 				
 				readyListeners.clear();
@@ -227,9 +227,9 @@ public class LoLXMPPAPI {
 		return ready;
 	}
 
-	public void onReady(Consumer<Void> e) {
+	public void onReady(SimpleAction e) {
 		if(isReady()) {
-			e.accept(null);
+			e.doAction();
 		} else {
 			readyListeners.add(e);
 		}
