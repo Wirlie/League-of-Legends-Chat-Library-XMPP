@@ -9,20 +9,21 @@ Latest Build: https://ci.appveyor.com/project/Wirlie/league-of-legends-chat-libr
 LoLXMPPAPI api = new LoLXMPPAPI(ChatRegion.LAN);
 if(api.login("USERNAME", "PASSWORD")) {
   //success
-  api.onReady(e -> {
-    //Add Friend Listener
-    api.addFriendListener(new FriendListener() {
-      @Override
-      public void onMessage(FriendMessage msg) {
-        //Incoming message ...
-      };
-      
-      @Override
-      public void onFriendStateChange(Friend friend) {
-        //Check new state
-      };
-      
-      //Coming soon ...
+  api.onReady(() -> {
+    api.addFriendJoinListener(friend -> {
+      //Friend Login Event
+    });
+    
+    api.addFriendLeaveListener(friend -> {
+      //Friend Logout Event
+    });
+    
+    api.addFriendStatusChangeListener(friend -> {
+      //Friend Status Change
+    });
+    
+    api.addMessageListener(message -> {
+      //Incoming Message
     });
   });
 } else {
