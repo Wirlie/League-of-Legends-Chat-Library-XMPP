@@ -217,5 +217,27 @@ public class LoLXMPPAPI {
 	public Collection<Friend> getAllFriends() {
 		return new ArrayList<Friend>(friends.values());
 	}
+	
+	public Collection<Friend> getOnlineFriends() {
+		List<Friend> list = new ArrayList<Friend>();
+		for(Friend friend : friends.values()) {
+			if(friend.isOnline()) {
+				list.add(friend);
+			}
+		}
+		
+		return list;
+	}
+	
+	public Collection<Friend> getOfflineFriends() {
+		List<Friend> list = new ArrayList<Friend>();
+		for(Friend friend : friends.values()) {
+			if(!friend.isOnline()) {
+				list.add(friend);
+			}
+		}
+		
+		return list;
+	}
 
 }
