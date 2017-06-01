@@ -25,6 +25,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -46,6 +47,7 @@ public class Friend {
 	private boolean isOnline = false;
 	private ChatState show = ChatState.OFFLINE;
 	private GameState gameState = null;
+	private ProfileIcon profileIcon = new ProfileIcon(0);
 
 	protected Friend(XmppClient client, Contact contact) {
 		this.contact = contact;
@@ -75,10 +77,21 @@ public class Friend {
 					
 					XPathFactory xPathfactory = XPathFactory.newInstance();
 					XPath path = xPathfactory.newXPath();
-					XPathExpression expr = path.compile("body/gameStatus");
 					
-					gameState = GameState.fromXmlValue(expr.evaluate(document));
-				} catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+					try {
+						XPathExpression expr = path.compile("body/gameStatus");
+						gameState = GameState.fromXmlValue(expr.evaluate(document));
+					} catch (XPathExpressionException e) {
+						e.printStackTrace();
+					}
+					
+					try {
+						XPathExpression expr = path.compile("body/profileIcon");
+						profileIcon = new ProfileIcon(((Double) expr.evaluate(document, XPathConstants.NUMBER)).intValue());
+					} catch (XPathExpressionException e) {
+						e.printStackTrace();
+					}
+				} catch (ParserConfigurationException | SAXException | IOException e) {
 					e.printStackTrace();
 					gameState = GameState.OUT_OF_GAME;
 				}
@@ -114,6 +127,10 @@ public class Friend {
 	
 	public GameState getGameState() {
 		return gameState;
+	}
+	
+	public ProfileIcon getProfileIcon() {
+		return profileIcon;
 	}
 
 }
