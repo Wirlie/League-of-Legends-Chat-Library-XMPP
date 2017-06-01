@@ -21,8 +21,17 @@ package lolxmpp.api;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.stanza.model.Message;
@@ -36,6 +45,7 @@ public class Friend {
 	private XmppClient client;
 	private boolean isOnline = false;
 	private ChatState show = ChatState.OFFLINE;
+	private GameState gameState = null;
 
 	protected Friend(XmppClient client, Contact contact) {
 		this.contact = contact;
@@ -43,32 +53,38 @@ public class Friend {
 	}
 
 	protected void updatePresence(Presence presence) {
-		Show sw = presence.getShow();
-		if(sw != null) {
-			isOnline = true;
-			show = ChatState.from(sw);
-		}
-		
-		System.out.println(contact.getJid());
-		System.out.println(contact.getName());
-		System.out.println(presence.getStatus());
-		System.out.println(presence.getShow());
-		
-		String status = presence.getStatus();
-		
-		if(status != null) {
-			org.jdom.input.SAXBuilder saxBuilder = new SAXBuilder();
-			
-			try {
-			    org.jdom.Document doc = saxBuilder.build(new StringReader(presence.getStatus()));
-			    String message = doc.getRootElement().getText();
-			    System.out.println("STATUS:" + message);
-			} catch (JDOMException e) {
-				System.out.println("JDOM Invalido: Estado Invalido:");
-				System.out.println(presence.getStatus());
-			} catch (IOException e) {
-			    // handle IOException
+		if(presence.isAvailable()) {
+			Show sw = presence.getShow();
+			if(sw != null) {
+				show = ChatState.from(sw);
+			} else {
+				show = ChatState.MOBILE;
 			}
+			
+			isOnline = true;
+			
+			String status = presence.getStatus();
+			if(status != null) {
+				
+				try {
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					Document document = builder.parse(new InputSource(new StringReader(status)));
+					
+					XPathFactory xPathfactory = XPathFactory.newInstance();
+					XPath path = xPathfactory.newXPath();
+					XPathExpression expr = path.compile("body/gameStatus");
+					
+					gameState = GameState.fromXmlValue(expr.evaluate(document));
+				} catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+					e.printStackTrace();
+					gameState = GameState.OUT_OF_GAME;
+				}
+			}
+		} else {
+			isOnline = false;
+			show = ChatState.OFFLINE;
 		}
 	}
 	
@@ -93,6 +109,10 @@ public class Friend {
 	
 	public ChatState getChatState() {
 		return show;
+	}
+	
+	public GameState getGameState() {
+		return gameState;
 	}
 
 }
