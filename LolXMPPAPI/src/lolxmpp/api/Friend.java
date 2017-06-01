@@ -46,7 +46,7 @@ public class Friend {
 	private LoLXMPPAPI api;
 	private boolean isOnline = false;
 	private ChatStatus show = ChatStatus.OFFLINE;
-	private GameStatus gameState = null;
+	private GameStatus gameStatus = null;
 	private ProfileIcon profileIcon = new ProfileIcon(0);
 
 	protected Friend(LoLXMPPAPI api, Contact contact) {
@@ -60,7 +60,7 @@ public class Friend {
 				show = ChatStatus.from(sw);
 			} else {
 				show = ChatStatus.MOBILE;
-				gameState = GameStatus.MOBILE;
+				gameStatus = GameStatus.MOBILE;
 			}
 			
 			String status = presence.getStatus();
@@ -77,7 +77,7 @@ public class Friend {
 					
 					try {
 						XPathExpression expr = path.compile("body/gameStatus");
-						gameState = GameStatus.fromXmlValue(expr.evaluate(document));
+						gameStatus = GameStatus.fromXmlValue(expr.evaluate(document));
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
 					}
@@ -90,7 +90,7 @@ public class Friend {
 					}
 				} catch (ParserConfigurationException | SAXException | IOException e) {
 					e.printStackTrace();
-					gameState = GameStatus.OUT_OF_GAME;
+					gameStatus = GameStatus.OUT_OF_GAME;
 				}
 			}
 			
@@ -117,7 +117,6 @@ public class Friend {
 			return true;
 		}
 		
-		System.err.println("ERROR AL ENVIAR MENSAJE: Cliente XMPP no conectado.");
 		return false;
 	}
 	
@@ -129,12 +128,12 @@ public class Friend {
 		return isOnline;
 	}
 	
-	public ChatStatus getChatState() {
+	public ChatStatus getChatStatus() {
 		return show;
 	}
 	
-	public GameStatus getGameState() {
-		return gameState;
+	public GameStatus getGameStatus() {
+		return gameStatus;
 	}
 	
 	public ProfileIcon getProfileIcon() {

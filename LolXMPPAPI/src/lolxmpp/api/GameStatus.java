@@ -50,7 +50,7 @@ public enum GameStatus {
 			}
 		}
 		
-		System.err.println("Unknown game state: " + xmlValue);
+		System.err.println("Unknown game status: " + xmlValue);
 		
 		return GameStatus.OUT_OF_GAME;
 	}
