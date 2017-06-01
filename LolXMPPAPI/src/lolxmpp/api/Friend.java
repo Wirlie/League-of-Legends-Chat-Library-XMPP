@@ -45,7 +45,7 @@ public class Friend {
 	private Contact contact;
 	private LoLXMPPAPI api;
 	private boolean isOnline = false;
-	private ChatState show = ChatState.OFFLINE;
+	private ChatStatus show = ChatStatus.OFFLINE;
 	private GameStatus gameState = null;
 	private ProfileIcon profileIcon = new ProfileIcon(0);
 
@@ -57,9 +57,9 @@ public class Friend {
 		if(presence.isAvailable()) {
 			Show sw = presence.getShow();
 			if(sw != null) {
-				show = ChatState.from(sw);
+				show = ChatStatus.from(sw);
 			} else {
-				show = ChatState.MOBILE;
+				show = ChatStatus.MOBILE;
 				gameState = GameStatus.MOBILE;
 			}
 			
@@ -99,7 +99,7 @@ public class Friend {
 				api.handleFriendJoinEvent(this);
 			}
 		} else {
-			show = ChatState.OFFLINE;
+			show = ChatStatus.OFFLINE;
 
 			if(isOnline) {
 				isOnline = false;
@@ -129,7 +129,7 @@ public class Friend {
 		return isOnline;
 	}
 	
-	public ChatState getChatState() {
+	public ChatStatus getChatState() {
 		return show;
 	}
 	
