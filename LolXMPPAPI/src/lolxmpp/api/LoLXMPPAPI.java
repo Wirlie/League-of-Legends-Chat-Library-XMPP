@@ -49,7 +49,7 @@ public class LoLXMPPAPI {
 	private XmppClient xmppClient;
 	private List<FriendListener> friendListeners = new ArrayList<FriendListener>();
 	private ExecutorService  eventsThreadPool = null;
-	private Map<Jid, Friend> friends = new HashMap<Jid, Friend>();
+	private Map<String, Friend> friends = new HashMap<String, Friend>();
 	private boolean ready = false;
 	private List<Consumer<Void>> readyListeners = new ArrayList<Consumer<Void>>();
 	
@@ -114,7 +114,7 @@ public class LoLXMPPAPI {
 			
 			//Read roster contacts
 			for(Contact contact : roster.getContacts()) {
-				friends.put(contact.getJid(), new Friend(xmppClient, contact));
+				friends.put(contact.getJid().getLocal(), new Friend(xmppClient, contact));
 			}
 			
 			//Add Incoming Presence Listener
@@ -123,8 +123,8 @@ public class LoLXMPPAPI {
 				Contact contact = roster.getContact(presence.getFrom());
 				
 				if(contact != null) {
-					if(friends.containsKey(contact.getJid())) {
-						Friend f = friends.get(contact.getJid());
+					if(friends.containsKey(contact.getJid().getLocal())) {
+						Friend f = friends.get(contact.getJid().getLocal());
 						f.updatePresence(e.getPresence());
 						
 						synchronized(friendListeners) {
@@ -135,7 +135,7 @@ public class LoLXMPPAPI {
 					} else {
 						Friend friend = new Friend(xmppClient, contact);
 						friend.updatePresence(e.getPresence());
-						friends.put(contact.getJid(), friend);
+						friends.put(contact.getJid().getLocal(), friend);
 					}
 				}
 			});
@@ -174,7 +174,7 @@ public class LoLXMPPAPI {
 	}
 	
 	private Friend getFriendByJid(Jid jid) {
-		return friends.get(jid);
+		return friends.get(jid.getLocal());
 	}
 	
 	public Friend getFriendByName(String name) {
