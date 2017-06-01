@@ -19,6 +19,9 @@ install:
   - cmd: java -version
 build_script:
   - mvn clean package -B -Dmaven.test.skip=true
+after_build:
+  - cmd: RENAME C:\projects\league-of-legends-chat-library-xmpp\LolXMPPAPI\target\LolXMPPAPI-0.0.1-SNAPSHOT.jar LolXMPPAPI.jar
+  - cmd: MOVE C:\projects\league-of-legends-chat-library-xmpp\LolXMPPAPI\target\LolXMPPAPI.jar %APPVEYOR_BUILD_FOLDER%
 cache:
   - C:\maven\
   - C:\Users\appveyor\.m2
