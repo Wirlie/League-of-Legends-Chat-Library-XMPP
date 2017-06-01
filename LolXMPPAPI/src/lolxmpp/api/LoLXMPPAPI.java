@@ -31,6 +31,10 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
+import lolxmpp.api.listeners.FriendJoinListener;
+import lolxmpp.api.listeners.FriendLeaveListener;
+import lolxmpp.api.listeners.FriendStatusListener;
+import lolxmpp.api.listeners.MessageListener;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
@@ -46,12 +50,16 @@ public class LoLXMPPAPI {
 	private LoginResult loginResult = LoginResult.NOT_LOGGED;
 	private ChatRegion region;
 	private XmppClient xmppClient;
-	private List<FriendListener> friendListeners = new ArrayList<FriendListener>();
 	private ExecutorService  eventsThreadPool = null;
 	private Map<String, Friend> friends = new HashMap<String, Friend>();
 	private boolean ready = false;
 	private boolean delaying = false;
+	
 	private List<Consumer<Void>> readyListeners = new ArrayList<Consumer<Void>>();
+	private List<MessageListener> messageListeners = new ArrayList<MessageListener>();
+	private List<FriendStatusListener> friendStatusListeners = new ArrayList<FriendStatusListener>();
+	private List<FriendJoinListener> friendJoinListeners = new ArrayList<FriendJoinListener>();
+	private List<FriendLeaveListener> friendLeaveListeners = new ArrayList<FriendLeaveListener>();
 	
 	public LoLXMPPAPI(ChatRegion region) {
 		this.region = region;
@@ -129,8 +137,8 @@ public class LoLXMPPAPI {
 						Friend f = friends.get(contact.getJid().getLocal());
 						f.updatePresence(e.getPresence());
 						
-						synchronized(friendListeners) {
-							friendListeners.forEach(listener -> {
+						synchronized(friendStatusListeners) {
+							friendStatusListeners.forEach(listener -> {
 								listener.onFriendStatusChange(f);
 							});
 						}
@@ -144,10 +152,11 @@ public class LoLXMPPAPI {
 			
 			//Add Incoming Message Listener
 			xmppClient.addInboundMessageListener(e -> {
-				synchronized(friendListeners) {
-					friendListeners.forEach(listener -> {
+				synchronized(messageListeners) {
+					messageListeners.forEach(listener -> {
 						Message msg = e.getMessage();
 						Friend f = getFriendByJid(msg.getFrom());
+						
 						if(f == null) {
 							System.err.println("Something is wrong! Incoming message from unknown friend.");
 						} else {
@@ -184,8 +193,20 @@ public class LoLXMPPAPI {
 		}.start();
 	}
 	
-	public void addFriendListener(FriendListener listener) {
-		friendListeners.add(listener);
+	public void addMessageListener(MessageListener listener) {
+		messageListeners.add(listener);
+	}
+	
+	public void addFriendStatusChangeListener(FriendStatusListener listener) {
+		friendStatusListeners.add(listener);
+	}
+	
+	public void addFriendJoinListener(FriendJoinListener listener) {
+		friendJoinListeners.add(listener);
+	}
+	
+	public void addFriendLeaveListener(FriendLeaveListener listener) {
+		friendLeaveListeners.add(listener);
 	}
 	
 	private Friend getFriendByJid(Jid jid) {

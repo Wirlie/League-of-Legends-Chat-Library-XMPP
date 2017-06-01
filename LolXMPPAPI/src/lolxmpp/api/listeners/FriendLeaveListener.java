@@ -1,5 +1,5 @@
 /*
- *	XMPP API to chat and interact with the League of Legends ChatServers. 
+ *  XMPP API to chat and interact with the League of Legends ChatServers. 
  *
  *  Copyright (C) 2017  Josue Acevedo
  *
@@ -16,16 +16,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api;
+package lolxmpp.api.listeners;
 
-public interface FriendListener {
+import lolxmpp.api.Friend;
 
-	void onMessage(FriendMessage message);
-
-	void onFriendStatusChange(Friend friend);
-	
-	default void onFriendJoin(Friend friend) {
-		
-	};
-	
+/**
+ * @author wirlie
+ *
+ */
+@FunctionalInterface
+public interface FriendLeaveListener {
+	public void onFriendLeave(Friend f);
 }
