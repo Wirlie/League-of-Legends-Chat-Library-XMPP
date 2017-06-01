@@ -21,9 +21,12 @@ build_script:
   - mvn clean package -B -Dmaven.test.skip=true
 after_build:
   - cmd: MOVE C:\projects\league-of-legends-chat-library-xmpp\LolXMPPAPI\target\LolXMPPAPI.jar %APPVEYOR_BUILD_FOLDER%
+  - cmd: MOVE C:\projects\league-of-legends-chat-library-xmpp\LolXMPPAPI\target\LolXMPPAPI-with-dependencies.jar %APPVEYOR_BUILD_FOLDER%
 cache:
   - C:\maven\
   - C:\Users\appveyor\.m2
 artifacts:
   - path: LolXMPPAPI.jar
-    name: LolXMPPAPI-last-build
+    name: last-build
+  - path: LolXMPPAPI-with-dependencies.jar
+    name: last-build-with-dependencies
