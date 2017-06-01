@@ -23,7 +23,10 @@ package lolxmpp.api;
  *
  */
 public enum GameState {
-	OUT_OF_GAME(""),
+	OUT_OF_GAME("outOfGame"),
+	CHAMPION_SELECT("championSelect"),
+	IN_GAME("inGame"),
+	SPECTATING("spectating"),
 	;
 	
 	private String xmlValue;
