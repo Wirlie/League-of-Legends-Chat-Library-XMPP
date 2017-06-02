@@ -242,7 +242,7 @@ public class LoLXMPPAPI {
 	
 	public Collection<Friend> getOnlineFriends() {
 		List<Friend> list = new ArrayList<Friend>();
-		for(Friend friend : friends.values()) {
+		for(Friend friend : getAllFriends()) {
 			if(friend.isOnline()) {
 				list.add(friend);
 			}
@@ -253,8 +253,30 @@ public class LoLXMPPAPI {
 	
 	public Collection<Friend> getOfflineFriends() {
 		List<Friend> list = new ArrayList<Friend>();
-		for(Friend friend : friends.values()) {
+		for(Friend friend : getAllFriends()) {
 			if(!friend.isOnline()) {
+				list.add(friend);
+			}
+		}
+		
+		return list;
+	}
+	
+	public Collection<Friend> getFriends(ChatStatus chatStatus) {
+		List<Friend> list = new ArrayList<Friend>();
+		for(Friend friend : getAllFriends()) {
+			if(friend.getChatStatus() == chatStatus) {
+				list.add(friend);
+			}
+		}
+		
+		return list;
+	}
+	
+	public Collection<Friend> getFriends(GameStatus gameStatus) {
+		List<Friend> list = new ArrayList<Friend>();
+		for(Friend friend : getAllFriends()) {
+			if(friend.getGameStatus() == gameStatus) {
 				list.add(friend);
 			}
 		}
