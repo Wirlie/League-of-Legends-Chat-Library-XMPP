@@ -175,7 +175,6 @@ public class LoLXMPPAPI {
 		}
 		
 		delaying = true;
-		LoLXMPPAPI api = this;
 		
 		new Thread() {
 			public void run() {
