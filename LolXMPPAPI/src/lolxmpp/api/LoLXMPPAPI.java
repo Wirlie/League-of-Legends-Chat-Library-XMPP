@@ -120,14 +120,15 @@ public class LoLXMPPAPI {
 		eventsThreadPool.execute(() -> {
 			RosterManager roster = xmppClient.getManager(RosterManager.class);
 			
-			//Read roster contacts
-			for(Contact contact : roster.getContacts()) {
-				friends.put(contact.getJid().getLocal(), new Friend(this, contact));
-			}
-			
 			//Add Incoming Presence Listener
 			xmppClient.addInboundPresenceListener(e -> {
-				notifyApiReady();
+				if(!delaying) {
+					notifyApiReady();
+					//Read roster contacts
+					for(Contact contact : roster.getContacts()) {
+						friends.put(contact.getJid().getLocal(), new Friend(this, contact));
+					}
+				}
 				
 				Presence presence = e.getPresence();
 				Contact contact = roster.getContact(presence.getFrom());
@@ -174,6 +175,7 @@ public class LoLXMPPAPI {
 		}
 		
 		delaying = true;
+		LoLXMPPAPI api = this;
 		
 		new Thread() {
 			public void run() {
