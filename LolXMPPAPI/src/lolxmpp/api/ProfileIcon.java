@@ -22,6 +22,8 @@ import java.awt.Image;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -33,6 +35,7 @@ public class ProfileIcon {
 	
 	private static String iconImagesUrl = "http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/%d.png";
 	private int id;
+	private static Map<Integer, Image> storedImages = new HashMap<Integer, Image>();
 	
 	public ProfileIcon(int id) {
 		if(id < 0) {
@@ -42,22 +45,38 @@ public class ProfileIcon {
 		this.id = id;
 	}
 	
-	public Image getImage() {
-		try {
-			URL tryUrl = new URL(String.format(iconImagesUrl, id));
-			try{
-				return ImageIO.read(tryUrl);
-			} catch (IOException e) {
-				tryUrl = new URL(String.format(iconImagesUrl, 0));
-				try {
-					return ImageIO.read(tryUrl);
-				} catch (IOException e2) {
-					//Cannot retrieve default profile icon
-					e2.printStackTrace();
+	public Image getImage(int width, int height) {
+		Image image = null;
+		
+		if(storedImages.containsKey(id)) {
+			image = storedImages.get(id);
+		} else {
+			try {
+				URL tryUrl = new URL(String.format(iconImagesUrl, id));
+				try{
+					image = ImageIO.read(tryUrl);
+					storedImages.put(id, image);
+				} catch (IOException e) {
+					if(storedImages.containsKey(0)) {
+						image = storedImages.get(0);
+					} else {
+						tryUrl = new URL(String.format(iconImagesUrl, 0));
+						try {
+							image = ImageIO.read(tryUrl);
+							storedImages.put(0, image);
+						} catch (IOException e2) {
+							//Cannot retrieve default profile icon
+							e2.printStackTrace();
+						}
+					}
 				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
 			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+		}
+		
+		if(image != null) {
+			return image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 		}
 		
 		return null;
