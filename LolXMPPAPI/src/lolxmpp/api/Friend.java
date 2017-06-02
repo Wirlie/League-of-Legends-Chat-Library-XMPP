@@ -140,5 +140,9 @@ public class Friend {
 	public ProfileIcon getProfileIcon() {
 		return profileIcon;
 	}
+	
+	public String getId() {
+		return contact.getJid().getLocal();
+	}
 
 }
