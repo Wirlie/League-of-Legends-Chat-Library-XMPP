@@ -35,6 +35,7 @@ public enum GameStatus {
 	IN_GAME("inGame"),
 	MOBILE("mobile"),
 	TUTORIAL("tutorial"),
+	HOSTING_NIGHTMARE_BOT_GAME("hosting_NIGHTMARE_BOT")
 	;
 	
 	private String xmlValue;
