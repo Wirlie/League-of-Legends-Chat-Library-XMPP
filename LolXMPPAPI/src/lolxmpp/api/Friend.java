@@ -31,6 +31,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -48,6 +50,9 @@ public class Friend {
 	private ChatStatus show = ChatStatus.OFFLINE;
 	private GameStatus gameStatus = null;
 	private ProfileIcon profileIcon = new ProfileIcon(0);
+	private int summonerLevel = 0;
+	private String statusMessage = "";
+	private long timestamp = 0L;
 
 	protected Friend(LoLXMPPAPI api, Contact contact) {
 		this.contact = contact;
@@ -64,7 +69,10 @@ public class Friend {
 				gameStatus = GameStatus.MOBILE;
 			}
 			
+			timestamp = 0L; //reset timestamp to 0
+			
 			String status = presence.getStatus();
+			System.out.println("status: " + status);
 			if(status != null) {
 				
 				try {
@@ -78,7 +86,10 @@ public class Friend {
 					
 					try {
 						XPathExpression expr = path.compile("body/gameStatus");
-						gameStatus = GameStatus.fromXmlValue(expr.evaluate(document));
+						String xmlValue = expr.evaluate(document);
+						if(!xmlValue.isEmpty()) {
+							gameStatus = GameStatus.fromXmlValue(xmlValue);
+						}
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
 					}
@@ -86,6 +97,28 @@ public class Friend {
 					try {
 						XPathExpression expr = path.compile("body/profileIcon");
 						profileIcon = new ProfileIcon(((Double) expr.evaluate(document, XPathConstants.NUMBER)).intValue());
+					} catch (XPathExpressionException e) {
+						e.printStackTrace();
+					}
+					
+					try {
+						XPathExpression expr = path.compile("body/level");
+						summonerLevel = ((Double) expr.evaluate(document, XPathConstants.NUMBER)).intValue();
+					} catch (XPathExpressionException e) {
+						e.printStackTrace();
+					}
+					
+					try {
+						XPathExpression expr = path.compile("body/statusMsg");
+						statusMessage = expr.evaluate(document);
+					} catch (XPathExpressionException e) {
+						e.printStackTrace();
+					}
+					
+					try {
+						XPathExpression expr = path.compile("body/timeStamp");
+						Double timeStamp = (Double) expr.evaluate(document, XPathConstants.NUMBER);
+						timestamp = timeStamp.longValue();
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
 					}
@@ -143,6 +176,18 @@ public class Friend {
 	
 	public String getId() {
 		return contact.getJid().getLocal();
+	}
+	
+	public int getSummonerLevel() {
+		return summonerLevel;
+	}
+	
+	public String getStatusMessage() {
+		return statusMessage;
+	}
+	
+	public long getGameStatusTimeStamp() {
+		return timestamp;
 	}
 
 }
