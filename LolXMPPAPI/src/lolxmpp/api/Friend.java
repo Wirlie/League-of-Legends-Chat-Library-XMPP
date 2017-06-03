@@ -31,8 +31,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -72,7 +70,6 @@ public class Friend {
 			timestamp = 0L; //reset timestamp to 0
 			
 			String status = presence.getStatus();
-			System.out.println("status: " + status);
 			if(status != null) {
 				
 				try {
@@ -89,6 +86,8 @@ public class Friend {
 						String xmlValue = expr.evaluate(document);
 						if(!xmlValue.isEmpty()) {
 							gameStatus = GameStatus.fromXmlValue(xmlValue);
+						} else {
+							gameStatus = GameStatus.OUT_OF_GAME;
 						}
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
