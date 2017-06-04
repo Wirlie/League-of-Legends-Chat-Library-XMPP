@@ -19,13 +19,17 @@
 package lolxmpp.api;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * @author wirlie
@@ -33,9 +37,43 @@ import javax.imageio.ImageIO;
  */
 public class ProfileIcon {
 	
-	private static String iconImagesUrl = "http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/%d.png";
 	private int id;
-	private static Map<Integer, Image> storedImages = new HashMap<Integer, Image>();
+	private static Map<Integer, Image> profileImages = new HashMap<Integer, Image>();
+	
+	public static void loadProfileIcons(RiotAPI api, ChatRegion region) {
+		JsonObject object = api.makeRequest("/lol/static-data/v3/profile-icons", region);
+
+		if(object.has("version")) {
+			String version = object.get("version").getAsString();
+			try {
+				BufferedImage fullImage = ImageIO.read(new URL("http://ddragon.leagueoflegends.com/cdn/" + version + "/img/sprite/profileicon0.png"));
+				if(object.has("data")) {
+					JsonObject data = object.get("data").getAsJsonObject();
+					for(Entry<String, JsonElement> member : data.entrySet()) {
+						try {
+							JsonObject dataObject = data.get(member.getKey()).getAsJsonObject();
+							
+							int profileIconID = dataObject.get("id").getAsInt();
+							
+							JsonObject imageObject = dataObject.get("image").getAsJsonObject();
+							
+							int x = imageObject.get("x").getAsInt();
+							int y = imageObject.get("y").getAsInt();
+							int w = imageObject.get("w").getAsInt();
+							int h = imageObject.get("h").getAsInt();
+							
+							profileImages.put(profileIconID, fullImage.getSubimage(x, y, w, h));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (IOException e) {
+				System.err.println("Error : URL: " + "http://ddragon.leagueoflegends.com/cdn/" + version + "/img/sprite/profileicon0.png");
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public ProfileIcon(int id) {
 		if(id < 0) {
@@ -46,38 +84,11 @@ public class ProfileIcon {
 	}
 	
 	public Image getImage(int width, int height) {
-		Image image = null;
-		
-		if(storedImages.containsKey(id)) {
-			image = storedImages.get(id);
-		} else {
-			try {
-				URL tryUrl = new URL(String.format(iconImagesUrl, id));
-				try{
-					image = ImageIO.read(tryUrl);
-					storedImages.put(id, image);
-				} catch (IOException e) {
-					if(storedImages.containsKey(0)) {
-						image = storedImages.get(0);
-					} else {
-						tryUrl = new URL(String.format(iconImagesUrl, 0));
-						try {
-							image = ImageIO.read(tryUrl);
-							storedImages.put(0, image);
-						} catch (IOException e2) {
-							//Cannot retrieve default profile icon
-							e2.printStackTrace();
-						}
-					}
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
+		if(profileImages.containsKey(id)) {
+			return profileImages.get(id);
 		}
 		
-		if(image != null) {
-			return image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		}
+		System.err.println("ProfileIconID " + id + " not implemented.");
 		
 		return null;
 	}

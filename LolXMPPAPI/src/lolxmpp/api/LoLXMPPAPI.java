@@ -65,6 +65,9 @@ public class LoLXMPPAPI {
 	public LoLXMPPAPI(ChatRegion region, RiotAPI riotAPI) {
 		this.region = region;
 		this.riotAPI = riotAPI;
+		
+		//load profile icons
+		ProfileIcon.loadProfileIcons(riotAPI, region);
 	}
 	
 	public boolean login(String username, String password) {
