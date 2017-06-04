@@ -18,12 +18,12 @@ if(api.login("USERNAME", "PASSWORD")) {
       //Friend Logout Event
     });
     
-    api.addFriendStatusChangeListener(friend -> {
-      //Friend Status Change
+    api.addFriendStatusChangeListener(event -> {
+      //Friend Status Change Event
     });
     
-    api.addMessageListener(message -> {
-      //Incoming Message
+    api.addMessageListener(event -> {
+      //Incoming Message Event
     });
   });
 } else {
