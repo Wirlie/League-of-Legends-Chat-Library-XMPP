@@ -54,13 +54,13 @@ public class RiotAPI {
 			connection.setRequestProperty("X-Riot-Token", key);
 			
 			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-		        throw new RuntimeException("[RAPI] Request Failed. HTTP Error Code: " + connection.getResponseCode() + ", URL: " + tryUrl);
-		    }
+				throw new RuntimeException("[RAPI] Request Failed. HTTP Error Code: " + connection.getResponseCode() + ", URL: " + tryUrl);
+			}
 			
-		    JsonElement element = new JsonParser().parse(new JsonReader(new InputStreamReader(connection.getInputStream())));
-		    if(!element.isJsonNull()) {
-		    	return element.getAsJsonObject();
-		    }
+			JsonElement element = new JsonParser().parse(new JsonReader(new InputStreamReader(connection.getInputStream())));
+			if(!element.isJsonNull()) {
+				return element.getAsJsonObject();
+			}
 		} catch (MalformedURLException e) {
 			System.err.println("[RAPI] Something's wrong!");
 			System.err.println("[RAPI] Malformed URL: " + tryUrl);
