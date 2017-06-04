@@ -36,6 +36,7 @@ import com.google.gson.stream.JsonReader;
 public class RiotAPI {
 	
 	private String key;
+	private ChatRegion region;
 	
 	public RiotAPI(String key) {
 		this.key = key;
@@ -45,7 +46,11 @@ public class RiotAPI {
 		return key;
 	}
 	
-	public JsonObject makeRequest(String apiPath, ChatRegion region) {
+	protected void setRegion(ChatRegion region) {
+		this.region = region;
+	}
+	
+	public JsonObject makeRequest(String apiPath) {
 		String apiHost = region.apiHost();
 		String tryUrl = "https://" + apiHost + apiPath;
 		try {

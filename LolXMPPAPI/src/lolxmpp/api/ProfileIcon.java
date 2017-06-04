@@ -40,8 +40,8 @@ public class ProfileIcon {
 	private int id;
 	private static Map<Integer, Image> profileImages = new HashMap<Integer, Image>();
 	
-	public static void loadProfileIcons(RiotAPI api, ChatRegion region) {
-		JsonObject object = api.makeRequest("/lol/static-data/v3/profile-icons", region);
+	public static void loadProfileIcons(RiotAPI api) {
+		JsonObject object = api.makeRequest("/lol/static-data/v3/profile-icons");
 
 		if(object.has("version")) {
 			String version = object.get("version").getAsString();
