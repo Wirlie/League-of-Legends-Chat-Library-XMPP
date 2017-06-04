@@ -146,7 +146,7 @@ public class Friend {
 						XPathExpression expr = path.compile("body/statusMsg");
 						String statusMessage = expr.evaluate(document);
 						
-						if(this.statusMessage != statusMessage) {
+						if(!this.statusMessage.equalsIgnoreCase(statusMessage)) {
 							this.statusMessage = statusMessage;
 							changed[2] = true;
 						}
