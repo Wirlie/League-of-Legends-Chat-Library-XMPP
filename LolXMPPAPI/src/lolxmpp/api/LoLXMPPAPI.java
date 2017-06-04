@@ -34,6 +34,7 @@ import lolxmpp.api.listeners.FriendJoinListener;
 import lolxmpp.api.listeners.FriendLeaveListener;
 import lolxmpp.api.listeners.FriendStatusListener;
 import lolxmpp.api.listeners.MessageListener;
+import lolxmpp.api.listeners.object.FriendStatusEvent;
 import lolxmpp.api.listeners.object.MessageEvent;
 import lolxmpp.api.util.SimpleAction;
 import rocks.xmpp.addr.Jid;
@@ -143,11 +144,11 @@ public class LoLXMPPAPI {
 				if(contact != null) {
 					if(friends.containsKey(contact.getJid().getLocal())) {
 						Friend f = friends.get(contact.getJid().getLocal());
-						f.updatePresence(e.getPresence());
+						boolean[] changed = f.updatePresence(e.getPresence());
 						
 						synchronized(friendStatusListeners) {
 							friendStatusListeners.forEach(listener -> {
-								listener.onFriendStatusChange(f);
+								listener.onFriendStatusChange(new FriendStatusEvent(f, changed));
 							});
 						}
 					} else {

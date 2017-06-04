@@ -57,14 +57,36 @@ public class Friend {
 		this.api = api;
 	}
 
-	protected void updatePresence(Presence presence) {
+	protected boolean[] updatePresence(Presence presence) {
+		/*
+		 * [0] = chatStatusChanged
+		 * [1] = gameStatusChanged
+		 * [2] = statusMessageChanged
+		 * [3] = profileIconChanged
+		 */
+		boolean[] changed = new boolean[] {false, false, false, false};
+		
 		if(presence.isAvailable()) {
 			Show sw = presence.getShow();
+			
 			if(sw != null) {
-				show = ChatStatus.from(sw);
+				ChatStatus show = ChatStatus.from(sw);
+				if(this.show != show) {
+					this.show = show;
+					changed[0] = true;
+				}
 			} else {
-				show = ChatStatus.MOBILE;
-				gameStatus = GameStatus.MOBILE;
+				ChatStatus show = ChatStatus.MOBILE;
+				if(this.show != show) {
+					this.show = show;
+					changed[0] = true;
+				}
+				
+				GameStatus gameStatus = GameStatus.MOBILE;
+				if(this.gameStatus != gameStatus) {
+					changed[1] = true;
+					this.gameStatus = gameStatus;
+				}
 			}
 			
 			timestamp = 0L; //reset timestamp to 0
@@ -85,9 +107,17 @@ public class Friend {
 						XPathExpression expr = path.compile("body/gameStatus");
 						String xmlValue = expr.evaluate(document);
 						if(!xmlValue.isEmpty()) {
-							gameStatus = GameStatus.fromXmlValue(xmlValue);
+							GameStatus gameStatus = GameStatus.fromXmlValue(xmlValue);
+							if(this.gameStatus != gameStatus) {
+								changed[1] = true;
+								this.gameStatus = gameStatus;
+							}
 						} else {
-							gameStatus = GameStatus.OUT_OF_GAME;
+							GameStatus gameStatus = GameStatus.OUT_OF_GAME;
+							if(this.gameStatus != gameStatus) {
+								changed[1] = true;
+								this.gameStatus = gameStatus;
+							}
 						}
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
@@ -95,7 +125,12 @@ public class Friend {
 					
 					try {
 						XPathExpression expr = path.compile("body/profileIcon");
-						profileIcon = new ProfileIcon(((Double) expr.evaluate(document, XPathConstants.NUMBER)).intValue());
+						ProfileIcon profileIcon = new ProfileIcon(((Double) expr.evaluate(document, XPathConstants.NUMBER)).intValue());
+						
+						if(this.profileIcon.getId() != profileIcon.getId()) {
+							changed[3] = true;
+							this.profileIcon = profileIcon;
+						}
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
 					}
@@ -109,7 +144,12 @@ public class Friend {
 					
 					try {
 						XPathExpression expr = path.compile("body/statusMsg");
-						statusMessage = expr.evaluate(document);
+						String statusMessage = expr.evaluate(document);
+						
+						if(this.statusMessage != statusMessage) {
+							this.statusMessage = statusMessage;
+							changed[2] = true;
+						}
 					} catch (XPathExpressionException e) {
 						e.printStackTrace();
 					}
@@ -123,7 +163,11 @@ public class Friend {
 					}
 				} catch (ParserConfigurationException | SAXException | IOException e) {
 					e.printStackTrace();
-					gameStatus = GameStatus.OUT_OF_GAME;
+					GameStatus gameStatus = GameStatus.OUT_OF_GAME;
+					if(this.gameStatus != gameStatus) {
+						changed[1] = true;
+						this.gameStatus = gameStatus;
+					}
 				}
 			}
 			
@@ -132,13 +176,19 @@ public class Friend {
 				api.handleFriendJoinEvent(this);
 			}
 		} else {
-			show = ChatStatus.OFFLINE;
+			ChatStatus show = ChatStatus.OFFLINE;
+			if(this.show != show) {
+				changed[0] = true;
+				this.show = show;
+			}
 
 			if(isOnline) {
 				isOnline = false;
 				api.handleFriendLeaveEvent(this);
 			}
 		}
+		
+		return changed;
 	}
 	
 	public boolean sendMessage(String message) {

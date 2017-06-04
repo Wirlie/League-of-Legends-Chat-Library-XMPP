@@ -18,7 +18,7 @@
  */
 package lolxmpp.api.listeners;
 
-import lolxmpp.api.Friend;
+import lolxmpp.api.listeners.object.FriendStatusEvent;
 
 /**
  * @author wirlie
@@ -26,7 +26,7 @@ import lolxmpp.api.Friend;
  */
 @FunctionalInterface
 public interface FriendStatusListener {
-
-	public void onFriendStatusChange(Friend f);
+	
+	public void onFriendStatusChange(FriendStatusEvent f);
 	
 }
