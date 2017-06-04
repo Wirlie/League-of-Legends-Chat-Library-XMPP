@@ -18,7 +18,7 @@
  */
 package lolxmpp.api.listeners;
 
-import lolxmpp.api.FriendMessage;
+import lolxmpp.api.listeners.object.MessageEvent;
 
 /**
  * @author wirlie
@@ -26,5 +26,5 @@ import lolxmpp.api.FriendMessage;
  */
 @FunctionalInterface
 public interface MessageListener {
-	public void onMessage(FriendMessage message);
+	public void onMessage(MessageEvent message);
 }

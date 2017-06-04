@@ -34,6 +34,7 @@ import lolxmpp.api.listeners.FriendJoinListener;
 import lolxmpp.api.listeners.FriendLeaveListener;
 import lolxmpp.api.listeners.FriendStatusListener;
 import lolxmpp.api.listeners.MessageListener;
+import lolxmpp.api.listeners.object.MessageEvent;
 import lolxmpp.api.util.SimpleAction;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
@@ -167,7 +168,7 @@ public class LoLXMPPAPI {
 						if(f == null) {
 							System.err.println("Something is wrong! Incoming message from unknown friend.");
 						} else {
-							listener.onMessage(new FriendMessage(f, msg.getBodies()));
+							listener.onMessage(new MessageEvent(f, msg.getBodies()));
 						}
 					});
 				}

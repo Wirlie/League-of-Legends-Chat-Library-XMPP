@@ -16,18 +16,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api;
+package lolxmpp.api.listeners.object;
 
 import java.util.List;
 
+import lolxmpp.api.Friend;
 import rocks.xmpp.core.stanza.model.Text;
 
-public class FriendMessage {
+public class MessageEvent {
 	
 	private Friend f;
 	private String fullMessage = "";
 
-	public FriendMessage(Friend f, List<Text> bodies) {
+	public MessageEvent(Friend f, List<Text> bodies) {
 		bodies.forEach(text -> {
 			fullMessage += text.getText() + " ";
 		});
