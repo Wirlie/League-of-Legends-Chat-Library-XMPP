@@ -5,35 +5,4 @@ Pending documentation ...
 #### Downloads:
 Latest Build: https://ci.appveyor.com/project/Wirlie/league-of-legends-chat-library-xmpp/build/artifacts
 #### Usage:
-```java
-LoLXMPPAPI api = new LoLXMPPAPI(ChatRegion.NA, new RiotAPI("DEVELOPMENT API KEY");
-if(api.login("LOL USERNAME", "LOL PASSWORD")) {
-  //success
-  api.onReady(() -> {
-    api.addFriendJoinListener(friend -> {
-      //Friend Login Event
-    });
-    
-    api.addFriendLeaveListener(friend -> {
-      //Friend Logout Event
-    });
-    
-    api.addFriendStatusChangeListener(event -> {
-      //Friend Status Change Event
-    });
-    
-    api.addMessageListener(event -> {
-      //Incoming Message Event
-    });
-  });
-} else {
-  //auth failed
-  
-  //OPTIONAL: Check login result
-  if(api.getLoginResult() == LoginResult.AUTH_FAILED) {
-    //Please check your username or password ...
-  } else {
-    //Something's wrong
-  }
-}
-```
+See the following examples: https://github.com/Wirlie/League-of-Legends-Chat-Library-XMPP/tree/master/examples
