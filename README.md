@@ -6,8 +6,8 @@ Pending documentation ...
 Latest Build: https://ci.appveyor.com/project/Wirlie/league-of-legends-chat-library-xmpp/build/artifacts
 #### Usage:
 ```java
-LoLXMPPAPI api = new LoLXMPPAPI(ChatRegion.LAN);
-if(api.login("USERNAME", "PASSWORD")) {
+LoLXMPPAPI api = new LoLXMPPAPI(ChatRegion.NA, new RiotAPI("DEVELOPMENT API KEY");
+if(api.login("LOL USERNAME", "LOL PASSWORD")) {
   //success
   api.onReady(() -> {
     api.addFriendJoinListener(friend -> {
