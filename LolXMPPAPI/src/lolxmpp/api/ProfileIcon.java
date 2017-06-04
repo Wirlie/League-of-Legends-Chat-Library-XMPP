@@ -85,7 +85,7 @@ public class ProfileIcon {
 	
 	public Image getImage(int width, int height) {
 		if(profileImages.containsKey(id)) {
-			return profileImages.get(id);
+			return profileImages.get(id).getScaledInstance(width, height, Image.SCALE_SMOOTH);
 		}
 		
 		System.err.println("ProfileIconID " + id + " not implemented.");
