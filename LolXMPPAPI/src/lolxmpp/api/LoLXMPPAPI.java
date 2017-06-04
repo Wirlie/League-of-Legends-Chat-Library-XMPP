@@ -54,6 +54,7 @@ public class LoLXMPPAPI {
 	private Map<String, Friend> friends = new HashMap<String, Friend>();
 	private boolean ready = false;
 	private boolean delaying = false;
+	private RiotAPI riotAPI;
 	
 	private List<SimpleAction> readyListeners = new ArrayList<SimpleAction>();
 	private List<MessageListener> messageListeners = new ArrayList<MessageListener>();
@@ -61,8 +62,9 @@ public class LoLXMPPAPI {
 	private List<FriendJoinListener> friendJoinListeners = new ArrayList<FriendJoinListener>();
 	private List<FriendLeaveListener> friendLeaveListeners = new ArrayList<FriendLeaveListener>();
 	
-	public LoLXMPPAPI(ChatRegion region) {
+	public LoLXMPPAPI(ChatRegion region, RiotAPI riotAPI) {
 		this.region = region;
+		this.riotAPI = riotAPI;
 	}
 	
 	public boolean login(String username, String password) {
@@ -298,6 +300,10 @@ public class LoLXMPPAPI {
 		for(FriendLeaveListener listener : friendLeaveListeners) {
 			listener.onFriendLeave(friend);
 		}
+	}
+
+	public RiotAPI getRiotAPI() {
+		return riotAPI;
 	}
 
 }
