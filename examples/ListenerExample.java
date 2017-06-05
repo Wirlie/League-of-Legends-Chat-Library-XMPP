@@ -20,21 +20,8 @@
 			
 			System.out.println("Friend Status Changed! (" + f.getName() + ")");
 			
-			if(event.gameStatusChanged()) { //Optional check
-				System.out.println("GameStatus has changed! New GameStatus: " + f.getGameStatus());
-			}
-			
-			if(event.statusMessageChanged()) { //Optional check
-				System.out.println("StatusMessage has changed! New StatusMessage: " + f.getStatusMessage());
-			}
-			
-			if(event.chatStatusChanged()) { //Optional check
-				System.out.println("ChatStatus has changed! New ChatStatus: " + f.getChatStatus());
-			}
-			
-			if(event.profileIconChanged()) { //Optional check
-				System.out.println("ProfileIcon has changed! New ProfileIcon ID: " + f.getProfileIcon().getId());
-			}
+			LoLStatus oldStatus = event.getOldStatus(); //get the old friend status before event
+			LoLStatus newStatus = f.getLoLStatus(); //get the current friend status
 		});
     
 		api.addMessageListener(event -> {
