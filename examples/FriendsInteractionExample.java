@@ -28,12 +28,7 @@
 			
 			if(f != null) {
 				f.getName(); //get name
-				f.getGameStatus(); //get game status
-				f.getChatStatus(); //get chat status
-				f.getId(); //get summoner id
-				f.getStatusMessage(); //get status message
-				f.getSummonerLevel(); //get summoner level
-				f.getProfileIcon().getImage(50, 50); //get profile icon image (50px x 50px)
+				LoLStatus lolstatus = f.getLoLStatus(); //get the friend status (GameStatus, SummonerLevel, ProfileIconID, etc)
 				
 				f.sendMessage("Hello!"); //send message
 			}
