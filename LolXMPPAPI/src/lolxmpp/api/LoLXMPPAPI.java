@@ -44,6 +44,7 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.Presence.Show;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
 
@@ -57,12 +58,12 @@ public class LoLXMPPAPI {
 	private boolean ready = false;
 	private boolean delaying = false;
 	private RiotAPI riotAPI;
-	
 	private List<SimpleAction> readyListeners = new ArrayList<SimpleAction>();
 	private List<MessageListener> messageListeners = new ArrayList<MessageListener>();
 	private List<FriendStatusListener> friendStatusListeners = new ArrayList<FriendStatusListener>();
 	private List<FriendJoinListener> friendJoinListeners = new ArrayList<FriendJoinListener>();
 	private List<FriendLeaveListener> friendLeaveListeners = new ArrayList<FriendLeaveListener>();
+	private LoLStatus lolstatus = new LoLStatus(null);
 	
 	public LoLXMPPAPI(ChatRegion region, RiotAPI riotAPI) {
 		this.region = region;
@@ -144,11 +145,11 @@ public class LoLXMPPAPI {
 				if(contact != null) {
 					if(friends.containsKey(contact.getJid().getLocal())) {
 						Friend f = friends.get(contact.getJid().getLocal());
-						boolean[] changed = f.updatePresence(e.getPresence());
+						LoLStatus oldStatus = f.updatePresence(e.getPresence());
 						
 						synchronized(friendStatusListeners) {
 							friendStatusListeners.forEach(listener -> {
-								listener.onFriendStatusChange(new FriendStatusEvent(f, changed));
+								listener.onFriendStatusChange(new FriendStatusEvent(f, oldStatus));
 							});
 						}
 					} else {
@@ -183,6 +184,8 @@ public class LoLXMPPAPI {
 		}
 		
 		delaying = true;
+		
+		//enviar presencia personalizada
 		
 		new Thread() {
 			public void run() {
@@ -284,7 +287,7 @@ public class LoLXMPPAPI {
 	public Collection<Friend> getFriends(GameStatus gameStatus) {
 		List<Friend> list = new ArrayList<Friend>();
 		for(Friend friend : getAllFriends()) {
-			if(friend.getGameStatus() == gameStatus) {
+			if(friend.getLoLStatus().getGameStatus() == gameStatus) {
 				list.add(friend);
 			}
 		}
@@ -310,6 +313,17 @@ public class LoLXMPPAPI {
 
 	public RiotAPI getRiotAPI() {
 		return riotAPI;
+	}
+	
+	public void setLolStatus(LoLStatus lolstatus) {
+		Presence p = new Presence(null, Show.CHAT, lolstatus.toXML());
+		System.out.println("STATUS SEND: " + p.getStatus());
+		xmppClient.sendPresence(p);
+		this.lolstatus = lolstatus;
+	}
+	
+	public LoLStatus getLoLStatus() {
+		return lolstatus;
 	}
 
 }

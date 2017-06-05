@@ -44,6 +44,10 @@ public enum GameStatus {
 		this.xmlValue = xmlValue;
 	}
 	
+	public String xmlValue() {
+		return xmlValue;
+	}
+	
 	public static GameStatus fromXmlValue(String xmlValue) {
 		for(GameStatus state : values()) {
 			if(state.xmlValue.equalsIgnoreCase(xmlValue)) {

@@ -18,22 +18,6 @@
  */
 package lolxmpp.api;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
@@ -46,129 +30,31 @@ public class Friend {
 	private LoLXMPPAPI api;
 	private boolean isOnline = false;
 	private ChatStatus show = ChatStatus.OFFLINE;
-	private GameStatus gameStatus = null;
-	private ProfileIcon profileIcon = new ProfileIcon(0);
-	private int summonerLevel = 0;
-	private String statusMessage = "";
-	private long timestamp = 0L;
+	private LoLStatus lolStatus = new LoLStatus();
 
 	protected Friend(LoLXMPPAPI api, Contact contact) {
 		this.contact = contact;
 		this.api = api;
 	}
 
-	protected boolean[] updatePresence(Presence presence) {
-		/*
-		 * [0] = chatStatusChanged
-		 * [1] = gameStatusChanged
-		 * [2] = statusMessageChanged
-		 * [3] = profileIconChanged
-		 */
-		boolean[] changed = new boolean[] {false, false, false, false};
+	protected LoLStatus updatePresence(Presence presence) {
+		LoLStatus oldLoLStatus = (LoLStatus) getLoLStatus().clone();
 		
 		if(presence.isAvailable()) {
 			Show sw = presence.getShow();
 			
 			if(sw != null) {
-				ChatStatus show = ChatStatus.from(sw);
-				if(this.show != show) {
-					this.show = show;
-					changed[0] = true;
-				}
+				this.show = ChatStatus.from(sw);
 			} else {
-				ChatStatus show = ChatStatus.MOBILE;
-				if(this.show != show) {
-					this.show = show;
-					changed[0] = true;
-				}
+				this.show = ChatStatus.MOBILE;
 				
 				GameStatus gameStatus = GameStatus.MOBILE;
-				if(this.gameStatus != gameStatus) {
-					changed[1] = true;
-					this.gameStatus = gameStatus;
-				}
+				lolStatus.setGameStatus(gameStatus);
 			}
-			
-			timestamp = 0L; //reset timestamp to 0
 			
 			String status = presence.getStatus();
 			if(status != null) {
-				
-				try {
-					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-					
-					DocumentBuilder builder = factory.newDocumentBuilder();
-					Document document = builder.parse(new InputSource(new StringReader(status)));
-					
-					XPathFactory xPathfactory = XPathFactory.newInstance();
-					XPath path = xPathfactory.newXPath();
-					
-					try {
-						XPathExpression expr = path.compile("body/gameStatus");
-						String xmlValue = expr.evaluate(document);
-						if(!xmlValue.isEmpty()) {
-							GameStatus gameStatus = GameStatus.fromXmlValue(xmlValue);
-							if(this.gameStatus != gameStatus) {
-								changed[1] = true;
-								this.gameStatus = gameStatus;
-							}
-						} else {
-							GameStatus gameStatus = GameStatus.OUT_OF_GAME;
-							if(this.gameStatus != gameStatus) {
-								changed[1] = true;
-								this.gameStatus = gameStatus;
-							}
-						}
-					} catch (XPathExpressionException e) {
-						e.printStackTrace();
-					}
-					
-					try {
-						XPathExpression expr = path.compile("body/profileIcon");
-						ProfileIcon profileIcon = new ProfileIcon(((Double) expr.evaluate(document, XPathConstants.NUMBER)).intValue());
-						
-						if(this.profileIcon.getId() != profileIcon.getId()) {
-							changed[3] = true;
-							this.profileIcon = profileIcon;
-						}
-					} catch (XPathExpressionException e) {
-						e.printStackTrace();
-					}
-					
-					try {
-						XPathExpression expr = path.compile("body/level");
-						summonerLevel = ((Double) expr.evaluate(document, XPathConstants.NUMBER)).intValue();
-					} catch (XPathExpressionException e) {
-						e.printStackTrace();
-					}
-					
-					try {
-						XPathExpression expr = path.compile("body/statusMsg");
-						String statusMessage = expr.evaluate(document);
-						
-						if(!this.statusMessage.equalsIgnoreCase(statusMessage)) {
-							this.statusMessage = statusMessage;
-							changed[2] = true;
-						}
-					} catch (XPathExpressionException e) {
-						e.printStackTrace();
-					}
-					
-					try {
-						XPathExpression expr = path.compile("body/timeStamp");
-						Double timeStamp = (Double) expr.evaluate(document, XPathConstants.NUMBER);
-						timestamp = timeStamp.longValue();
-					} catch (XPathExpressionException e) {
-						e.printStackTrace();
-					}
-				} catch (ParserConfigurationException | SAXException | IOException e) {
-					e.printStackTrace();
-					GameStatus gameStatus = GameStatus.OUT_OF_GAME;
-					if(this.gameStatus != gameStatus) {
-						changed[1] = true;
-						this.gameStatus = gameStatus;
-					}
-				}
+				this.lolStatus = new LoLStatus(status);
 			}
 			
 			if(!isOnline) {
@@ -176,19 +62,16 @@ public class Friend {
 				api.handleFriendJoinEvent(this);
 			}
 		} else {
-			ChatStatus show = ChatStatus.OFFLINE;
-			if(this.show != show) {
-				changed[0] = true;
-				this.show = show;
-			}
+			this.show = ChatStatus.OFFLINE;
 
 			if(isOnline) {
 				isOnline = false;
+				this.lolStatus = new LoLStatus();
 				api.handleFriendLeaveEvent(this);
 			}
 		}
 		
-		return changed;
+		return oldLoLStatus;
 	}
 	
 	public boolean sendMessage(String message) {
@@ -215,28 +98,12 @@ public class Friend {
 		return show;
 	}
 	
-	public GameStatus getGameStatus() {
-		return gameStatus;
-	}
-	
-	public ProfileIcon getProfileIcon() {
-		return profileIcon;
-	}
-	
 	public String getId() {
 		return contact.getJid().getLocal();
 	}
 	
-	public int getSummonerLevel() {
-		return summonerLevel;
-	}
-	
-	public String getStatusMessage() {
-		return statusMessage;
-	}
-	
-	public long getGameStatusTimeStamp() {
-		return timestamp;
+	public LoLStatus getLoLStatus() {
+		return lolStatus;
 	}
 
 }

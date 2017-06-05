@@ -19,6 +19,7 @@
 package lolxmpp.api.listeners.object;
 
 import lolxmpp.api.Friend;
+import lolxmpp.api.LoLStatus;
 
 /**
  * @author wirlie
@@ -26,42 +27,16 @@ import lolxmpp.api.Friend;
  */
 public class FriendStatusEvent {
 	
-	private boolean chatStatusChanged;
-	private boolean gameStatusChanged;
-	private boolean statusMessageChanged;
-	private boolean profileIconChanged;
+	private LoLStatus oldStatus;
 	private Friend f;
 	
-	public FriendStatusEvent(Friend f, boolean[] changed) {
-		/*
-		 * boolean[] changed:
-		 * [0] = chatStatusChanged
-		 * [1] = gameStatusChanged
-		 * [2] = statusMessageChanged
-		 * [3] = profileIconChanged
-		 */
-		
-		this.chatStatusChanged = changed[0];
-		this.gameStatusChanged = changed[1];
-		this.statusMessageChanged = changed[2];
-		this.profileIconChanged = changed[3];
+	public FriendStatusEvent(Friend f, LoLStatus oldStatus) {
 		this.f = f;
+		this.oldStatus = oldStatus;
 	}
 	
-	public boolean chatStatusChanged() {
-		return chatStatusChanged;
-	}
-	
-	public boolean gameStatusChanged() {
-		return gameStatusChanged;
-	}
-	
-	public boolean statusMessageChanged() {
-		return statusMessageChanged;
-	}
-	
-	public boolean profileIconChanged() {
-		return profileIconChanged;
+	public LoLStatus oldStatus() {
+		return oldStatus;
 	}
 	
 	public Friend getFriend() {
