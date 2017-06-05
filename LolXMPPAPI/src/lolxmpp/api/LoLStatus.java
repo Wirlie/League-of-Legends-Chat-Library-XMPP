@@ -36,7 +36,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import lolxmpp.api.enums.Division;
 import lolxmpp.api.enums.GameStatus;
+import lolxmpp.api.enums.QueueType;
+import lolxmpp.api.enums.Tier;
 
 /**
  * @author wirlie
@@ -45,14 +48,14 @@ import lolxmpp.api.enums.GameStatus;
 public class LoLStatus implements Cloneable {
 	
 	private GameStatus gameStatus = GameStatus.OUT_OF_GAME;
-	//tier
+	private Tier tier = Tier.UNRANKED;
 	private int rankedWins = 0;
 	private int rankedLosses = 0;
 	private String rankedLeagueName = null;
-	//ranked league division
-	//ranked league tier
-	//ranker league queue
-	//game queue type
+	private Division rankedLeagueDivision = Division.NONE;
+	private Tier rankedLeagueTier = Tier.UNRANKED;
+	private QueueType rankedLeagueQueue = QueueType.NONE;
+	private QueueType gameQueueType = QueueType.NONE;
 	//is observable
 	private long timeStamp = 0L;
 	//map id
@@ -145,6 +148,11 @@ public class LoLStatus implements Cloneable {
 								case CHAMPION_ID:
 									break;
 								case GAME_QUEUE_TYPE:
+									try {
+										this.gameQueueType = QueueType.valueOf(nodeText);
+									} catch (IllegalArgumentException e) {
+										System.err.println("QueueType not implemented: [" + nodeText + "]");
+									}
 									break;
 								case GAME_STATUS:
 									this.gameStatus = GameStatus.fromXmlValue(nodeText);
@@ -162,13 +170,28 @@ public class LoLStatus implements Cloneable {
 									this.profileIconId = Integer.parseInt(nodeText);
 									break;
 								case RANKED_LEAGUE_DIVISION:
+									try {
+										this.rankedLeagueDivision = Division.valueOf(nodeText);
+									} catch (IllegalArgumentException e) {
+										System.err.println("RankedDivision not implemented: [" + nodeText + "]");
+									}
 									break;
 								case RANKED_LEAGUE_NAME:
 									this.rankedLeagueName = nodeText;
 									break;
 								case RANKED_LEAGUE_QUEUE:
+									try {
+										this.rankedLeagueQueue = QueueType.valueOf(nodeText);
+									} catch (IllegalArgumentException e) {
+										System.err.println("QueueType not implemented: [" + nodeText + "]");
+									}
 									break;
 								case RANKED_LEAGUE_TIER:
+									try {
+										this.rankedLeagueTier = Tier.valueOf(nodeText);
+									} catch (IllegalArgumentException e) {
+										System.err.println("Tier not implemented: [" + nodeText + "]");
+									}
 									break;
 								case RANKED_LOSSES:
 									this.rankedLosses = Integer.parseInt(nodeText);
@@ -184,6 +207,11 @@ public class LoLStatus implements Cloneable {
 									this.statusMessage = nodeText;
 									break;
 								case TIER:
+									try {
+										this.tier = Tier.valueOf(nodeText);
+									} catch (IllegalArgumentException e) {
+										System.err.println("Tier not implemented: [" + nodeText + "]");
+									}
 									break;
 								case TIMESTAMP:
 									this.timeStamp = Long.parseLong(nodeText);
@@ -239,6 +267,12 @@ public class LoLStatus implements Cloneable {
 		}
 		
 		sb.append(String.format(tagFormatInt, XMLProperties.LEVEL.getTag(), level));
+		sb.append(String.format(tagFormatStr, XMLProperties.TIER.getTag(), tier.toString()));
+		sb.append(String.format(tagFormatStr, XMLProperties.RANKED_LEAGUE_DIVISION.getTag(), rankedLeagueDivision.toString()));
+		sb.append(String.format(tagFormatStr, XMLProperties.RANKED_LEAGUE_TIER.getTag(), rankedLeagueTier.toString()));
+		sb.append(String.format(tagFormatStr, XMLProperties.RANKED_LEAGUE_QUEUE.getTag(), rankedLeagueQueue.toString()));
+		
+		sb.append(String.format(tagFormatStr, XMLProperties.GAME_QUEUE_TYPE.getTag(), gameQueueType.toString()));
 		
 		sb.append("</body>");
 		return sb.toString();
