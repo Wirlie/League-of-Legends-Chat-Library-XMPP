@@ -16,13 +16,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api;
+package lolxmpp.api.enums;
 
-public enum LoginResult {
-	NOT_LOGGED,
-	AUTH_FAILED,
-	AUTH_SUCCESS,
-	XMPP_CLIENT_ERROR,
-	SSL_CONTEXT_ERROR,
+import rocks.xmpp.core.stanza.model.Presence.Show;
+
+public enum ChatStatus {
+	CHAT,
+	DO_NOT_DISTURB,
+	AWAY,
+	MOBILE,
+	OFFLINE
 	;
+
+	public static ChatStatus from(Show sw) {
+		switch(sw) {
+			case AWAY:
+				return ChatStatus.AWAY;
+			case CHAT:
+				return ChatStatus.CHAT;
+			case XA:
+				return ChatStatus.AWAY;
+			case DND:
+				return ChatStatus.DO_NOT_DISTURB;
+			default:
+				//this shouldn't never happen
+				return ChatStatus.MOBILE;
+		}
+	}
+
 }

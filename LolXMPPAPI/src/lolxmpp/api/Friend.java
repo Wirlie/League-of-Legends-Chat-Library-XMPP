@@ -18,6 +18,8 @@
  */
 package lolxmpp.api;
 
+import lolxmpp.api.enums.ChatStatus;
+import lolxmpp.api.enums.GameStatus;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;

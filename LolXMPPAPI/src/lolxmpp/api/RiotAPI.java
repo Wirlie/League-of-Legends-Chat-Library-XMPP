@@ -29,6 +29,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
+import lolxmpp.api.enums.ChatRegion;
+
 /**
  * @author wirlie
  *

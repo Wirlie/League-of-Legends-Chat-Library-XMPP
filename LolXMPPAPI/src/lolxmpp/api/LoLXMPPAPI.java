@@ -30,6 +30,10 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
+import lolxmpp.api.enums.ChatRegion;
+import lolxmpp.api.enums.ChatStatus;
+import lolxmpp.api.enums.GameStatus;
+import lolxmpp.api.enums.LoginResult;
 import lolxmpp.api.listeners.FriendJoinListener;
 import lolxmpp.api.listeners.FriendLeaveListener;
 import lolxmpp.api.listeners.FriendStatusListener;
