@@ -107,5 +107,13 @@ public class Friend {
 	public LoLStatus getLoLStatus() {
 		return lolStatus;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Friend[name=" + getName() + ",id=" + getId() + ",isOnline=" + isOnline() + ",chatStatus=" + getChatStatus().toString() + ",lolStatus=" + getLoLStatus().toString() + "]";
+	}
 
 }

@@ -340,5 +340,26 @@ public class LoLStatus implements Cloneable {
 		
 		return null;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("LoLStatus[gameStatus=" + gameStatus.toString() + ",");
+		sb.append("tier=" + tier.toString() + ",");
+		sb.append("rankedWins=" + rankedWins + ",");
+		sb.append("rankedLosses=" + rankedLosses + ",");
+		sb.append("rankedLeagueName=" + rankedLeagueName + ",");
+		sb.append("rankedLeagueDivision=" + rankedLeagueDivision.toString() + ",");
+		sb.append("rankedLeagueTier=" + rankedLeagueTier.toString() + ",");
+		sb.append("rankedLeagueQueue=" + rankedLeagueQueue.toString() + ",");
+		sb.append("gameQueueType=" + gameQueueType.toString() + ",");
+		sb.append("timeStamp=" + timeStamp + ",");
+		sb.append("profileIconId=" + profileIconId + ",");
+		sb.append("statusMessage=" + statusMessage + ",");
+		sb.append("level=" + level + "]");
+		
+		return sb.toString();
+	}
 
 }

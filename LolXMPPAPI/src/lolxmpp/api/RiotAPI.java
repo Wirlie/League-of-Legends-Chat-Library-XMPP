@@ -80,5 +80,13 @@ public class RiotAPI {
 		
 		return new JsonObject();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "RiotAPI[key=" + key + ",region=" + region.toString() + "]";
+	}
 
 }

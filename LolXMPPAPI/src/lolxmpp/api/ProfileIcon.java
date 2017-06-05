@@ -96,4 +96,12 @@ public class ProfileIcon {
 	public int getId() {
 		return id;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ProfileIcon[id=" + id + "]";
+	}
 }
