@@ -330,6 +330,46 @@ public class LoLStatus implements Cloneable {
 		return level;
 	}
 	
+	public void setTier(Tier tier) {
+		this.tier = tier;
+	}
+	
+	public Tier getTier() {
+		return tier;
+	}
+	
+	public void setRankedDivision(Division division) {
+		this.rankedLeagueDivision = division;
+	}
+	
+	public Division getRankedDivision() {
+		return rankedLeagueDivision;
+	}
+	
+	public void setRankedTier(Tier tier) {
+		this.rankedLeagueTier = tier;
+	}
+	
+	public Tier getRankedTier() {
+		return rankedLeagueTier;
+	}
+	
+	public void setRankedQueue(QueueType queue) {
+		this.rankedLeagueQueue = queue;
+	}
+	
+	public QueueType getRankedQueue() {
+		return rankedLeagueQueue;
+	}
+	
+	public void setGameQueueType(QueueType queue) {
+		this.gameQueueType = queue;
+	}
+	
+	public QueueType getGameQueueType() {
+		return gameQueueType;
+	}
+	
 	@Override
 	public Object clone() {
 		try {
