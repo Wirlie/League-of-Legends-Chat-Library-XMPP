@@ -61,7 +61,7 @@ public class RiotAPI {
 			connection.setRequestProperty("X-Riot-Token", key);
 			
 			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				throw new RuntimeException("[RAPI] Request Failed. HTTP Error Code: " + connection.getResponseCode() + ", URL: " + tryUrl);
+				throw new RuntimeException("[RAPI] Request Failed. HTTP Error Code: " + connection.getResponseCode() + ", URL: " + tryUrl + ", KEY:" + key);
 			}
 			
 			JsonElement element = new JsonParser().parse(new JsonReader(new InputStreamReader(connection.getInputStream())));
