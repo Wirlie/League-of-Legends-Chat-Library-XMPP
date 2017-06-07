@@ -339,5 +339,9 @@ public class LoLXMPPAPI {
 	public LoLStatus getLoLStatus() {
 		return lolstatus;
 	}
+	
+	public String getSelfSummonerId() {
+		return xmppClient.getConnectedResource().getLocal();
+	}
 
 }
