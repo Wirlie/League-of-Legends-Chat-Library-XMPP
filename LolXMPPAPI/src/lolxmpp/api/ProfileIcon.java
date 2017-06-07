@@ -18,6 +18,7 @@
  */
 package lolxmpp.api;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -38,7 +39,7 @@ import com.google.gson.JsonObject;
 public class ProfileIcon {
 	
 	private int id;
-	private static Map<Integer, Image> profileImages = new HashMap<Integer, Image>();
+	private static Map<Integer, BufferedImage> profileImages = new HashMap<Integer, BufferedImage>();
 	
 	public static void loadProfileIcons(RiotAPI api) {
 		JsonObject object = api.makeRequest("/lol/static-data/v3/profile-icons");
@@ -83,9 +84,14 @@ public class ProfileIcon {
 		this.id = id;
 	}
 	
-	public Image getImage(int width, int height) {
+	public BufferedImage getImage(int width, int height) {
 		if(profileImages.containsKey(id)) {
-			return profileImages.get(id).getScaledInstance(width, height, Image.SCALE_SMOOTH);
+			Image toolkitImage = profileImages.get(id).getScaledInstance(width, height, Image.SCALE_SMOOTH);
+			BufferedImage buffImg = new BufferedImage(toolkitImage.getWidth(null), toolkitImage.getHeight(null), BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2 = (Graphics2D) buffImg.getGraphics();
+			g2.drawImage(toolkitImage, 0, 0, null);
+			g2.dispose();
+			return buffImg;
 		}
 		
 		System.err.println("ProfileIconID " + id + " not implemented.");
