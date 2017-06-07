@@ -239,6 +239,16 @@ public class LoLXMPPAPI {
 		return null;
 	}
 	
+	public Friend getFriendById(String friendId) {
+		for(Friend f : friends.values()) {
+			if(f.getId().equalsIgnoreCase(friendId)) {
+				return f;
+			}
+		}
+		
+		return null;
+	}
+	
 	public boolean isReady() {
 		return ready;
 	}
