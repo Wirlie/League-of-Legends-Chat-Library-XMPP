@@ -340,7 +340,7 @@ public class LoLXMPPAPI {
 		return lolstatus;
 	}
 	
-	public String getSelfSummonerId() {
+	public String getSummonerId() {
 		return xmppClient.getConnectedResource().getLocal();
 	}
 
