@@ -67,7 +67,7 @@ public class LoLXMPPAPI {
 	private List<FriendStatusListener> friendStatusListeners = new ArrayList<FriendStatusListener>();
 	private List<FriendJoinListener> friendJoinListeners = new ArrayList<FriendJoinListener>();
 	private List<FriendLeaveListener> friendLeaveListeners = new ArrayList<FriendLeaveListener>();
-	private LoLStatus lolstatus = new LoLStatus(null);
+	private UserPresence selfPresence;
 	
 	public LoLXMPPAPI(ChatRegion region, RiotAPI riotAPI) {
 		this.region = region;
@@ -129,6 +129,8 @@ public class LoLXMPPAPI {
 	}
 	
 	private void setupAPI() {
+		selfPresence = new UserPresence(xmppClient.getConnectedResource().getLocal());
+		
 		eventsThreadPool = Executors.newFixedThreadPool(1);
 		eventsThreadPool.execute(() -> {
 			RosterManager roster = xmppClient.getManager(RosterManager.class);
@@ -329,19 +331,35 @@ public class LoLXMPPAPI {
 		return riotAPI;
 	}
 	
-	public void setLolStatus(LoLStatus lolstatus) {
-		Presence p = new Presence(null, Show.CHAT, lolstatus.toXML());
-		System.out.println("STATUS SEND: " + p.getStatus());
-		xmppClient.sendPresence(p);
-		this.lolstatus = lolstatus;
+	public UserPresence getPresence() {
+		return selfPresence;
 	}
 	
-	public LoLStatus getLoLStatus() {
-		return lolstatus;
-	}
-	
-	public String getSummonerId() {
-		return xmppClient.getConnectedResource().getLocal();
+	public void setPresence(UserPresence presence) {
+		this.selfPresence = presence;
+		
+		Presence toSend = new Presence();
+		
+		ChatStatus chatStatus = presence.getChatStatus();
+		switch(chatStatus) {
+			case AWAY:
+				toSend.setShow(Show.AWAY);
+				break;
+			case CHAT:
+			case MOBILE:
+				toSend.setShow(Show.CHAT);
+				break;
+			case DO_NOT_DISTURB:
+				toSend.setShow(Show.DND);
+				break;
+			case OFFLINE:
+				toSend.setType(Presence.Type.UNAVAILABLE);
+				break;
+		}
+		
+		toSend.setStatus(presence.getLoLStatus().toXML());
+		
+		xmppClient.sendPresence(toSend);
 	}
 
 }

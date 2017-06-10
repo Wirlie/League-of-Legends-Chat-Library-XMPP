@@ -26,15 +26,14 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Presence.Show;
 import rocks.xmpp.im.roster.model.Contact;
 
-public class Friend {
+public class Friend extends UserPresence {
 	
 	private Contact contact;
 	private LoLXMPPAPI api;
 	private boolean isOnline = false;
-	private ChatStatus show = ChatStatus.OFFLINE;
-	private LoLStatus lolStatus = new LoLStatus();
 
 	protected Friend(LoLXMPPAPI api, Contact contact) {
+		super(contact.getJid().getLocal());
 		this.contact = contact;
 		this.api = api;
 	}
@@ -46,17 +45,17 @@ public class Friend {
 			Show sw = presence.getShow();
 			
 			if(sw != null) {
-				this.show = ChatStatus.from(sw);
+				setChatStatus(ChatStatus.from(sw));
 			} else {
-				this.show = ChatStatus.MOBILE;
+				setChatStatus(ChatStatus.MOBILE);
 				
 				GameStatus gameStatus = GameStatus.MOBILE;
-				lolStatus.setGameStatus(gameStatus);
+				getLoLStatus().setGameStatus(gameStatus);
 			}
 			
 			String status = presence.getStatus();
 			if(status != null) {
-				this.lolStatus = new LoLStatus(status);
+				setLoLStatus(new LoLStatus(status));
 			}
 			
 			if(!isOnline) {
@@ -64,11 +63,11 @@ public class Friend {
 				api.handleFriendJoinEvent(this);
 			}
 		} else {
-			this.show = ChatStatus.OFFLINE;
+			setChatStatus(ChatStatus.OFFLINE);
 
 			if(isOnline) {
 				isOnline = false;
-				this.lolStatus = new LoLStatus();
+				setLoLStatus(new LoLStatus());
 				api.handleFriendLeaveEvent(this);
 			}
 		}
@@ -94,18 +93,6 @@ public class Friend {
 	
 	public boolean isOnline() {
 		return isOnline;
-	}
-	
-	public ChatStatus getChatStatus() {
-		return show;
-	}
-	
-	public String getId() {
-		return contact.getJid().getLocal();
-	}
-	
-	public LoLStatus getLoLStatus() {
-		return lolStatus;
 	}
 	
 	/* (non-Javadoc)
