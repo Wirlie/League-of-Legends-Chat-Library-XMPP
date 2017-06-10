@@ -82,6 +82,10 @@ api.onReady(() -> {
         ...
     }
     
+    for(Friend f : api.getOfflineFriends()) { //offline friends
+        ...
+    }
+    
     for(Friend f : api.getFriends(ChatStatus.AWAY) { //get friends with away status
         ...
     }
