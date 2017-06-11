@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
@@ -112,28 +113,30 @@ public class Mastery {
 	 */
 	public static void loadMasteryIcons(RiotAPI rapi) {
 		try {
-			JsonObject jobject = rapi.makeRequest(" /lol/static-data/v3/masteries?tags=all");
+			JsonObject jobject = rapi.makeRequest("/lol/static-data/v3/masteries?tags=all");
 			if(jobject.has("version")) {
 				String currentVersion = jobject.get("version").getAsString();
 				String spriteUrl = "http://ddragon.leagueoflegends.com/cdn/" + currentVersion + "/img/sprite/mastery0.png";
 				BufferedImage image = ImageIO.read(new URL(spriteUrl));
 				
-				jobject.getAsJsonArray("data").forEach(element -> {
-					JsonObject arrObj = element.getAsJsonObject();
-					long id = arrObj.get("id").getAsLong();
+				JsonObject data = jobject.get("data").getAsJsonObject();
+				for(Entry<String, JsonElement> member : data.entrySet()) {
+					JsonObject dataObj = data.get(member.getKey()).getAsJsonObject();
 					
-					String name = arrObj.get("name").getAsString();
+					long id = dataObj.get("id").getAsLong();
+					
+					String name = dataObj.get("name").getAsString();
 					names.put(id, name);
 					
-					String masteryTreeStr = arrObj.get("masteryTree").getAsString();
+					String masteryTreeStr = dataObj.get("masteryTree").getAsString();
 					masteryTree.put(id, masteryTreeStr);
 					
-					int rank = arrObj.get("ranks").getAsInt();
+					int rank = dataObj.get("ranks").getAsInt();
 					ranks.put(id, rank);
 					
 					String[] descriptionsr = new String[rank];
 					
-					Iterator<JsonElement> it = arrObj.getAsJsonArray("description").iterator();
+					Iterator<JsonElement> it = dataObj.getAsJsonArray("description").iterator();
 					
 					int i = 0;
 					while(it.hasNext()) {
@@ -143,14 +146,14 @@ public class Mastery {
 					
 					descriptions.put(id, descriptionsr);
 					
-					JsonObject imageObject = arrObj.get("image").getAsJsonObject();
+					JsonObject imageObject = dataObj.get("image").getAsJsonObject();
 					int w = imageObject.get("w").getAsInt();
 					int h = imageObject.get("h").getAsInt();
 					int x = imageObject.get("x").getAsInt();
 					int y = imageObject.get("y").getAsInt();
 					
 					images.put(id, image.getSubimage(x, y, w, h));
-				});
+				}
 			}
 		} catch (APIException e) {
 			e.printStackTrace();
