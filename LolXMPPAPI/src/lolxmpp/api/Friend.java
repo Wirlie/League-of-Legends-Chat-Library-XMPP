@@ -18,8 +18,12 @@
  */
 package lolxmpp.api;
 
+import com.google.gson.JsonObject;
+
+import lolxmpp.api.data.GameInfo;
 import lolxmpp.api.enums.ChatStatus;
 import lolxmpp.api.enums.GameStatus;
+import lolxmpp.api.exceptions.APIException;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
@@ -102,5 +106,17 @@ public class Friend extends UserPresence {
 	public String toString() {
 		return "Friend[name=" + getName() + ",id=" + getId() + ",isOnline=" + isOnline() + ",chatStatus=" + getChatStatus().toString() + ",lolStatus=" + getLoLStatus().toString() + "]";
 	}
-
+	
+	public GameInfo getCurrentGameInfo() {
+		if(getLoLStatus().getGameStatus() == GameStatus.IN_GAME) {
+			try {
+				JsonObject jobject = api.getRiotAPI().makeRequest("/lol/spectator/v3/active-games/by-summoner/" + getSummonerId());
+				return GameInfo.fromJson(jobject.toString());
+			} catch (APIException e) {
+				e.printStackTrace();
+			};
+		}
+		
+		return null;
+	}
 }

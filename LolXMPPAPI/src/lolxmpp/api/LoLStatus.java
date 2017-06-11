@@ -36,6 +36,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import lolxmpp.api.data.ProfileIcon;
 import lolxmpp.api.enums.Division;
 import lolxmpp.api.enums.GameStatus;
 import lolxmpp.api.enums.QueueType;

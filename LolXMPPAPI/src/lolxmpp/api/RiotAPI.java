@@ -30,6 +30,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 import lolxmpp.api.enums.ChatRegion;
+import lolxmpp.api.exceptions.APIException;
 
 /**
  * @author wirlie
@@ -52,7 +53,7 @@ public class RiotAPI {
 		this.region = region;
 	}
 	
-	public JsonObject makeRequest(String apiPath) {
+	public JsonObject makeRequest(String apiPath) throws APIException {
 		String apiHost = region.apiHost();
 		String tryUrl = "https://" + apiHost + apiPath;
 		try {
@@ -61,7 +62,7 @@ public class RiotAPI {
 			connection.setRequestProperty("X-Riot-Token", key);
 			
 			if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				throw new RuntimeException("[RAPI] Request Failed. HTTP Error Code: " + connection.getResponseCode() + ", URL: " + tryUrl + ", KEY:" + key);
+				throw new APIException("[RAPI] Request Failed. HTTP Error Code: " + connection.getResponseCode() + ", URL: " + tryUrl + ", KEY:" + key);
 			}
 			
 			JsonElement element = new JsonParser().parse(new JsonReader(new InputStreamReader(connection.getInputStream())));

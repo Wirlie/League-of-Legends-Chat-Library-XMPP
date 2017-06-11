@@ -38,6 +38,18 @@ public class UserPresence {
 		return presenceId;
 	}
 	
+	public long getSummonerId() {
+		String parse = presenceId.replace("sum", "");
+		try {
+			return Long.parseLong(parse);
+		} catch (NumberFormatException e) {
+			System.err.println("Error parsing summoner ID, invalid long: " + parse + " from full id: " + presenceId);
+			e.printStackTrace();
+		}
+		
+		return -1;
+	}
+	
 	public ChatStatus getChatStatus() {
 		return show;
 	}

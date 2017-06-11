@@ -30,6 +30,8 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
+import lolxmpp.api.data.Mastery;
+import lolxmpp.api.data.ProfileIcon;
 import lolxmpp.api.enums.ChatRegion;
 import lolxmpp.api.enums.ChatStatus;
 import lolxmpp.api.enums.GameStatus;
@@ -69,6 +71,7 @@ public class LoLXMPPAPI {
 	private List<FriendLeaveListener> friendLeaveListeners = new ArrayList<FriendLeaveListener>();
 	private UserPresence selfPresence;
 	
+	@SuppressWarnings("deprecation")
 	public LoLXMPPAPI(ChatRegion region, RiotAPI riotAPI) {
 		this.region = region;
 		this.riotAPI = riotAPI;
@@ -76,6 +79,7 @@ public class LoLXMPPAPI {
 		
 		//load profile icons
 		ProfileIcon.loadProfileIcons(riotAPI);
+		Mastery.loadMasteryIcons(riotAPI);
 	}
 	
 	public boolean login(String username, String password) {

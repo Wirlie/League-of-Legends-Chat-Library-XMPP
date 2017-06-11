@@ -16,38 +16,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api.enums;
+package lolxmpp.api.data;
 
 /**
  * @author wirlie
  *
  */
-public enum QueueType {
-	NONE,
-	NORMAL,
-	NORMAL_3x3,
-	ODIN_UNRANKED,
-	ARAM_UNRANKED_5x5,
-	BOT,
-	BOT_3x3,
-	RANKED_SOLO_5x5,
-	RANKED_TEAM_3x3,
-	RANKED_TEAM_5x5,
-	ONEFORALL_5x5,
-	FIRSTBLOOD_1x1,
-	FIRSTBLOOD_2x2,
-	SR_6x6,
-	CAP_5x5,
-	URF,
-	URF_BOT,
-	NIGHTMARE_BOT,
-	ASCENSION,
-	HEXAKILL,
-	KING_PORO,
-	COUNTER_PICK,
-	BILGEWATER,
-	SIEGE,
-	RANKED_FLEX_TT,
-	RANKED_FLEX_SR,
-	DARKSTAR;
+public class Rune {
+	
+	private int count;
+	private long runeId;
+	
+	/** @return The count of this rune used by the participant */
+	public int getCount() {
+		return count;
+	}
+	
+	/** @return The ID of the rune  */
+	public long getRuneId() {
+		return runeId;
+	}
+
 }

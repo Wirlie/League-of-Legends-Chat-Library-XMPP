@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api;
+package lolxmpp.api.data;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -32,6 +32,9 @@ import javax.imageio.ImageIO;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import lolxmpp.api.RiotAPI;
+import lolxmpp.api.exceptions.APIException;
+
 /**
  * @author wirlie
  *
@@ -41,38 +44,45 @@ public class ProfileIcon {
 	private int id;
 	private static Map<Integer, BufferedImage> profileImages = new HashMap<Integer, BufferedImage>();
 	
+	/**
+	 * @deprecated Only for API initialization.
+	 * @param api RiotAPI Key
+	 */
 	public static void loadProfileIcons(RiotAPI api) {
-		JsonObject object = api.makeRequest("/lol/static-data/v3/profile-icons");
-
-		if(object.has("version")) {
-			String version = object.get("version").getAsString();
-			try {
-				BufferedImage fullImage = ImageIO.read(new URL("http://ddragon.leagueoflegends.com/cdn/" + version + "/img/sprite/profileicon0.png"));
-				if(object.has("data")) {
-					JsonObject data = object.get("data").getAsJsonObject();
-					for(Entry<String, JsonElement> member : data.entrySet()) {
-						try {
-							JsonObject dataObject = data.get(member.getKey()).getAsJsonObject();
-							
-							int profileIconID = dataObject.get("id").getAsInt();
-							
-							JsonObject imageObject = dataObject.get("image").getAsJsonObject();
-							
-							int x = imageObject.get("x").getAsInt();
-							int y = imageObject.get("y").getAsInt();
-							int w = imageObject.get("w").getAsInt();
-							int h = imageObject.get("h").getAsInt();
-							
-							profileImages.put(profileIconID, fullImage.getSubimage(x, y, w, h));
-						} catch (Exception e) {
-							e.printStackTrace();
+		try {
+			JsonObject object = api.makeRequest("/lol/static-data/v3/profile-icons");
+			if(object.has("version")) {
+				String version = object.get("version").getAsString();
+				try {
+					BufferedImage fullImage = ImageIO.read(new URL("http://ddragon.leagueoflegends.com/cdn/" + version + "/img/sprite/profileicon0.png"));
+					if(object.has("data")) {
+						JsonObject data = object.get("data").getAsJsonObject();
+						for(Entry<String, JsonElement> member : data.entrySet()) {
+							try {
+								JsonObject dataObject = data.get(member.getKey()).getAsJsonObject();
+								
+								int profileIconID = dataObject.get("id").getAsInt();
+								
+								JsonObject imageObject = dataObject.get("image").getAsJsonObject();
+								
+								int x = imageObject.get("x").getAsInt();
+								int y = imageObject.get("y").getAsInt();
+								int w = imageObject.get("w").getAsInt();
+								int h = imageObject.get("h").getAsInt();
+								
+								profileImages.put(profileIconID, fullImage.getSubimage(x, y, w, h));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					}
+				} catch (IOException e) {
+					System.err.println("Error : URL: " + "http://ddragon.leagueoflegends.com/cdn/" + version + "/img/sprite/profileicon0.png");
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				System.err.println("Error : URL: " + "http://ddragon.leagueoflegends.com/cdn/" + version + "/img/sprite/profileicon0.png");
-				e.printStackTrace();
 			}
+		} catch (APIException e1) {
+			e1.printStackTrace();
 		}
 	}
 	
