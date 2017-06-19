@@ -1,6 +1,6 @@
 Pending documentation ...
 
-**Important:** Library in alpha stage, this means that the API may not work properly, or as expected, please be patient.
+**Important:** Library in beta stage. Please report any bug.
 
 #### Downloads:
 Latest Build: https://ci.appveyor.com/project/Wirlie/league-of-legends-chat-library-xmpp/build/artifacts
