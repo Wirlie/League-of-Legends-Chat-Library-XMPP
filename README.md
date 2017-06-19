@@ -11,7 +11,7 @@ LoLXMPPAPI api = new LoLXMPPAPI(ChatRegion.NA, new RiotAPI("RGAPI-XXX-XXX-XXX-XX
 String lolUsername = "Wirlie";
 String lolPassword = "xxxxxxxxx";
 if(api.login(lolUsername, lolPassword)) {
-  api.onReady(() -> {
+  api.ready(() -> {
     UserPresence selfPresence = api.getPresence(); //(optional) get presence
     System.out.println(String.format("Welcome %s!!", selfPresence.getName());
     ...
@@ -27,7 +27,7 @@ if(api.login(lolUsername, lolPassword)) {
 **Update Presence:**
 ```JAVA
 ... //Login
-api.onReady(() -> {
+api.ready(() -> {
     UserPresence presence = api.getPresence();
     /*
      * Set Chat Status
@@ -49,7 +49,7 @@ api.onReady(() -> {
 **Listening Events:**
 ```JAVA
 ... //Login
-api.onReady(() -> {
+api.ready(() -> {
     api.addFriendStatusChangeListener(event -> {
         LoLStatus oldStatus = event.oldStatus(); //get old status, before event
         Friend friend = event.getFriend(); //the friend implied on this event
@@ -73,7 +73,7 @@ api.onReady(() -> {
 **Friends:**
 ```JAVA
 ... //Login
-api.onReady(() -> {
+api.ready(() -> {
     for(Friend f : api.getAllFriends()) { //all friends
         ...
     }
@@ -108,7 +108,7 @@ api.onReady(() -> {
 **Send Message to Friend**
 ```JAVA
 ... //Login
-api.onReady(() -> {
+api.ready(() -> {
      Friend friend = ...;
      friend.sendMessage("Hello!");
 });
@@ -116,7 +116,7 @@ api.onReady(() -> {
 **Get Profile Icon of any Friend**
 ```JAVA
 ... //Login
-api.onReady(() -> {
+api.ready(() -> {
     Friend friend = ...;
     ProfileIcon icon = friend.getLoLStatus().getProfileIcon(); //Retrieve Profile Icon
     icon.getImage(width, height); //Retrieve Image with the specified size
