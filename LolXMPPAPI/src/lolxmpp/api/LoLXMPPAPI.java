@@ -51,7 +51,6 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Presence.Show;
@@ -96,7 +95,7 @@ public class LoLXMPPAPI {
 				    .build();
 			
 			XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                    .debugger(ConsoleDebugger.class)
+                    //.debugger(ConsoleDebugger.class)
                     .build();
 			
 			xmppClient = XmppClient.create("pvp.net", configuration, tcpConfiguration);
@@ -204,10 +203,8 @@ public class LoLXMPPAPI {
 		
 		//try to get basic info (profileIcon, name and summonerLevel)
 		try {
-			System.out.println("22222");
 			JsonObject response = riotAPI.makeRequest("/lol/summoner/v3/summoners/" + selfPresence.getSummonerId());
-
-			System.out.println("33333");
+			
 			selfStatus.setProfileIconId(response.get("profileIconId").getAsInt());
 			selfStatus.setLevel(response.get("summonerLevel").getAsInt());
 			
