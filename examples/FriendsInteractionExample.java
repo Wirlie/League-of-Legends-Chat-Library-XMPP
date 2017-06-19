@@ -2,7 +2,7 @@
   
 		// Assuming that you already have an "api" variable and you already logged in (see Login Example)
   
-		api.onReady(() -> {
+		api.ready(() -> {
 			for(Friend f : api.getAllFriends()) {
 				//Loop all friends
 			}
