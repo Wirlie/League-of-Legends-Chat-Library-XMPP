@@ -49,5 +49,6 @@ public enum QueueType {
 	SIEGE,
 	RANKED_FLEX_TT,
 	RANKED_FLEX_SR,
+	ASSASSINATE,
 	DARKSTAR;
 }
