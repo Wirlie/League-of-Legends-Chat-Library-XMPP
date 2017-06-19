@@ -3,7 +3,7 @@
   
 	// Assuming that you already have an "api" variable and you already logged in (see Login Example)
 
-	api.onReady(() -> {
+	api.ready(() -> {
 		api.addFriendJoinListener(friend -> {
 			//Friend Login Event
 			System.out.println("Friend Join (" + friend.getName() + ")");
