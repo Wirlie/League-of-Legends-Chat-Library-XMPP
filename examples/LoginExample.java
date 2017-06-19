@@ -8,7 +8,7 @@ public class LoginExample {
 		
 		if(api.login(lolUsername, lolPassword)) {
 			//Wait the API for the "it's ready for use" status
-			api.onReady(() -> {
+			api.ready(() -> {
 				...
 			});
 		} else {
