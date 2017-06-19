@@ -12,6 +12,8 @@ String lolUsername = "Wirlie";
 String lolPassword = "xxxxxxxxx";
 if(api.login(lolUsername, lolPassword)) {
   api.onReady(() -> {
+    UserPresence selfPresence = api.getPresence(); //(optional) get presence
+    System.out.println(String.format("Welcome %s!!", selfPresence.getName());
     ...
   }
 } else {
@@ -22,38 +24,36 @@ if(api.login(lolUsername, lolPassword)) {
   }
 }
 ```
-**Change Presence**
+**Update Presence:**
 ```JAVA
 ... //Login
 api.onReady(() -> {
     UserPresence presence = api.getPresence();
     /*
-     * OFFLINE = Invisible
-     * CHAT = Online
-     * AWAY = Away
-     * DO_NOT_DISTURB = Do not disturb
+     * Set Chat Status
      */
-    presence.setChatStatus(ChatStatus.CHAT);
+    presence.setChatStatus(ChatStatus.AWAY);
     /*
      * Change LoLStatus
      */
     LoLStatus lolStatus = presence.getLoLStatus();
     lolStatus.setGameStatus(GameStatus.IN_GAME);
     ...
+    ...
     /*
-     * Update presence
+     * Send modified presence
      */
     api.setPresence(presence);
 }
 ```
-**Listening events**
+**Listening Events:**
 ```JAVA
 ... //Login
 api.onReady(() -> {
     api.addFriendStatusChangeListener(event -> {
         LoLStatus oldStatus = event.oldStatus(); //get old status, before event
-        Friend friend = event.getFriend(); //get friend implied on this event
-        LoLStatus newStatus = friend.getLoLStatus(); //get new status
+        Friend friend = event.getFriend(); //the friend implied on this event
+        LoLStatus newStatus = friend.getLoLStatus(); //new status
     });
     
     api.addFriendLeaveListener(friend -> {
@@ -65,12 +65,12 @@ api.onReady(() -> {
     });
     
     api.addMessageListener(event -> {
-        Friend fromFriend = event.getFriend();
-        String message = event.getMessage();
+        Friend from = event.getFriend(); //author
+        String message = event.getMessage(); //message
     });
 });
 ```
-**Get Friends**
+**Friends:**
 ```JAVA
 ... //Login
 api.onReady(() -> {
@@ -100,12 +100,12 @@ api.onReady(() -> {
     Friend friend = api.getFriendByName(...);
     
     /*
-     * Retrieve friend by ID (getId())
+     * Retrieve friend by ID (Friend#getId())
      */
     Friend friend = api.getFriendById(...);
 });
 ```
-**Send Message**
+**Send Message to Friend**
 ```JAVA
 ... //Login
 api.onReady(() -> {
@@ -113,12 +113,13 @@ api.onReady(() -> {
      friend.sendMessage("Hello!");
 });
 ```
-**Get Friend Profile Icon Image**
+**Get Profile Icon of any Friend**
 ```JAVA
 ... //Login
 api.onReady(() -> {
     Friend friend = ...;
-    friend.getLoLStatus().getProfileIcon().getImage(width, height); //Retrieve image
+    ProfileIcon icon = friend.getLoLStatus().getProfileIcon(); //Retrieve Profile Icon
+    icon.getImage(width, height); //Retrieve Image with the specified size
 });
 ```
 More examples: https://github.com/Wirlie/League-of-Legends-Chat-Library-XMPP/tree/master/examples
