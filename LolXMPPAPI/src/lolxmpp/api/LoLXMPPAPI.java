@@ -276,7 +276,7 @@ public class LoLXMPPAPI {
 		return ready;
 	}
 
-	public void onReady(SimpleAction e) {
+	public void ready(SimpleAction e) {
 		if(isReady()) {
 			e.doAction();
 		} else {
