@@ -37,7 +37,7 @@ public class Friend extends UserPresence {
 	private boolean isOnline = false;
 
 	protected Friend(LoLXMPPAPI api, Contact contact) {
-		super(contact.getJid().getLocal());
+		super(contact.getJid().getLocal(), contact.getName());
 		this.contact = contact;
 		this.api = api;
 	}
@@ -89,10 +89,6 @@ public class Friend extends UserPresence {
 		}
 		
 		return false;
-	}
-	
-	public String getName() {
-		return contact.getName();
 	}
 	
 	public boolean isOnline() {

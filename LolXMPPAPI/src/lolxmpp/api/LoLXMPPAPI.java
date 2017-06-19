@@ -30,12 +30,15 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.google.gson.JsonObject;
+
 import lolxmpp.api.data.Mastery;
 import lolxmpp.api.data.ProfileIcon;
 import lolxmpp.api.enums.ChatRegion;
 import lolxmpp.api.enums.ChatStatus;
 import lolxmpp.api.enums.GameStatus;
 import lolxmpp.api.enums.LoginResult;
+import lolxmpp.api.exceptions.APIException;
 import lolxmpp.api.listeners.FriendJoinListener;
 import lolxmpp.api.listeners.FriendLeaveListener;
 import lolxmpp.api.listeners.FriendStatusListener;
@@ -48,6 +51,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Presence.Show;
@@ -92,7 +96,7 @@ public class LoLXMPPAPI {
 				    .build();
 			
 			XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                    //.debugger(ConsoleDebugger.class)
+                    .debugger(ConsoleDebugger.class)
                     .build();
 			
 			xmppClient = XmppClient.create("pvp.net", configuration, tcpConfiguration);
@@ -133,8 +137,6 @@ public class LoLXMPPAPI {
 	}
 	
 	private void setupAPI() {
-		selfPresence = new UserPresence(xmppClient.getConnectedResource().getLocal());
-		
 		eventsThreadPool = Executors.newFixedThreadPool(1);
 		eventsThreadPool.execute(() -> {
 			RosterManager roster = xmppClient.getManager(RosterManager.class);
@@ -195,7 +197,25 @@ public class LoLXMPPAPI {
 		
 		delaying = true;
 		
-		//enviar presencia personalizada
+		selfPresence = new UserPresence(xmppClient.getConnectedResource().getLocal());
+		selfPresence.setChatStatus(ChatStatus.CHAT);
+		
+		LoLStatus selfStatus = selfPresence.getLoLStatus();
+		
+		//try to get basic info (profileIcon, name and summonerLevel)
+		try {
+			System.out.println("22222");
+			JsonObject response = riotAPI.makeRequest("/lol/summoner/v3/summoners/" + selfPresence.getSummonerId());
+
+			System.out.println("33333");
+			selfStatus.setProfileIconId(response.get("profileIconId").getAsInt());
+			selfStatus.setLevel(response.get("summonerLevel").getAsInt());
+			
+			selfPresence.setName(response.get("name").getAsString());
+			setPresence(selfPresence);
+		} catch (APIException e1) {
+			e1.printStackTrace();
+		}
 		
 		new Thread() {
 			public void run() {

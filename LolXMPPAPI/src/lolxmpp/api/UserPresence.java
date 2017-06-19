@@ -29,9 +29,24 @@ public class UserPresence {
 	private ChatStatus show = ChatStatus.OFFLINE;
 	private LoLStatus lolStatus = new LoLStatus();
 	private String presenceId;
-	
+	private String name;
+
 	public UserPresence(String id) {
 		this.presenceId = id;
+		this.name = "Unknown Name";
+	}
+	
+	public UserPresence(String id, String name) {
+		this.presenceId = id;
+		this.name = name;
+	}
+	
+	protected void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public String getId() {
