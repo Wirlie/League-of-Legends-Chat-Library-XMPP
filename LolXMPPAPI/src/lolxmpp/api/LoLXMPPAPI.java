@@ -39,12 +39,19 @@ import lolxmpp.api.enums.ChatStatus;
 import lolxmpp.api.enums.GameStatus;
 import lolxmpp.api.enums.LoginResult;
 import lolxmpp.api.exceptions.APIException;
+import lolxmpp.api.listeners.FriendAddListener;
 import lolxmpp.api.listeners.FriendJoinListener;
 import lolxmpp.api.listeners.FriendLeaveListener;
 import lolxmpp.api.listeners.FriendStatusListener;
 import lolxmpp.api.listeners.MessageListener;
+import lolxmpp.api.listeners.FriendRemoveListener;
+import lolxmpp.api.listeners.FriendRequestListener;
+import lolxmpp.api.listeners.object.FriendRequest;
 import lolxmpp.api.listeners.object.FriendStatusEvent;
 import lolxmpp.api.listeners.object.MessageEvent;
+import lolxmpp.api.presence.BasicPresence;
+import lolxmpp.api.presence.Friend;
+import lolxmpp.api.presence.UserPresence;
 import lolxmpp.api.util.SimpleAction;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
@@ -56,23 +63,33 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Presence.Show;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.im.subscription.PresenceManager;
 
 public class LoLXMPPAPI {
 	
-	private LoginResult loginResult = LoginResult.NOT_LOGGED;
-	private ChatRegion region;
-	private XmppClient xmppClient;
-	private ExecutorService  eventsThreadPool = null;
-	private Map<String, Friend> friends = new HashMap<String, Friend>();
-	private boolean ready = false;
-	private boolean delaying = false;
-	private RiotAPI riotAPI;
-	private List<SimpleAction> readyListeners = new ArrayList<SimpleAction>();
-	private List<MessageListener> messageListeners = new ArrayList<MessageListener>();
-	private List<FriendStatusListener> friendStatusListeners = new ArrayList<FriendStatusListener>();
-	private List<FriendJoinListener> friendJoinListeners = new ArrayList<FriendJoinListener>();
-	private List<FriendLeaveListener> friendLeaveListeners = new ArrayList<FriendLeaveListener>();
-	private UserPresence selfPresence;
+	private LoginResult					loginResult				= LoginResult.NOT_LOGGED;
+	private XmppClient					xmppClient;
+
+	private boolean						ready					= false;
+	private boolean						delaying				= false;
+	private ExecutorService				eventsThreadPool		= null;
+
+	private ChatRegion					region;
+	private RiotAPI						riotAPI;
+	private UserPresence				selfPresence;
+
+	private Map<String, Friend>			friends					= new HashMap<>();
+	private List<FriendRequest>			pendingapprove			= new ArrayList<>();
+
+	private List<SimpleAction>			readyListeners			= new ArrayList<>();
+	private List<MessageListener>		messageListeners		= new ArrayList<>();
+	private List<FriendStatusListener>	friendStatusListeners	= new ArrayList<>();
+	private List<FriendJoinListener>	friendJoinListeners		= new ArrayList<>();
+	private List<FriendLeaveListener>	friendLeaveListeners	= new ArrayList<>();
+	private List<FriendAddListener>		friendAddListeners		= new ArrayList<>();
+	private List<FriendRemoveListener>	friendRemoveListeners	= new ArrayList<>();
+	private List<FriendRequestListener>	friendRequestListeners	= new ArrayList<>();
+	
 	
 	@SuppressWarnings("deprecation")
 	public LoLXMPPAPI(ChatRegion region, RiotAPI riotAPI) {
@@ -135,10 +152,40 @@ public class LoLXMPPAPI {
 		return loginResult;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void setupAPI() {
 		eventsThreadPool = Executors.newFixedThreadPool(1);
 		eventsThreadPool.execute(() -> {
 			RosterManager roster = xmppClient.getManager(RosterManager.class);
+			
+			//Contacts Listener
+			roster.addRosterListener(e -> {
+				if(!e.getAddedContacts().isEmpty()) {
+					//Add friend
+					for(Contact contact : e.getAddedContacts()) {
+						Friend friend = friends.get(contact.getJid().getLocal());
+						if(friend == null) {
+							friend = new Friend(this, contact);
+							friends.put(contact.getJid().getLocal(), friend);
+						}
+						
+						for(FriendAddListener listener : friendAddListeners) {
+							listener.onNewFriend(friend);
+						}
+					}
+				}
+				
+				if(!e.getRemovedContacts().isEmpty()) {
+					//Remove friend
+					for(Contact contact : e.getRemovedContacts()) {
+						Friend friend = friends.remove(contact.getJid().getLocal());
+						
+						for(FriendRemoveListener listener : friendRemoveListeners) {
+							listener.onRemoveFriend(friend);
+						}
+					}
+				}
+			});
 			
 			//Add Incoming Presence Listener
 			xmppClient.addInboundPresenceListener(e -> {
@@ -152,21 +199,43 @@ public class LoLXMPPAPI {
 				
 				Presence presence = e.getPresence();
 				Contact contact = roster.getContact(presence.getFrom());
-				
-				if(contact != null) {
-					if(friends.containsKey(contact.getJid().getLocal())) {
-						Friend f = friends.get(contact.getJid().getLocal());
-						LoLStatus oldStatus = f.updatePresence(e.getPresence());
+
+				if(presence.getType() == Presence.Type.SUBSCRIBE) {
+					BasicPresence basicp = new BasicPresence(presence.getFrom());
+					
+					try {
+						JsonObject response = riotAPI.makeRequest("/lol/summoner/v3/summoners/" + basicp.getSummonerId());
+						basicp.setName(response.get("name").getAsString());
+					} catch (APIException e1) {
+						e1.printStackTrace();
+					}
+					
+					synchronized(pendingapprove) {
+						FriendRequest request = new FriendRequest(this, basicp);
+						pendingapprove.add(request);
 						
-						synchronized(friendStatusListeners) {
-							friendStatusListeners.forEach(listener -> {
-								listener.onFriendStatusChange(new FriendStatusEvent(f, oldStatus));
-							});
+						if(isReady()) {
+							for(FriendRequestListener listener : friendRequestListeners) {
+								listener.onFriendRequest(request);
+							}
 						}
-					} else {
-						Friend friend = new Friend(this, contact);
-						friend.updatePresence(e.getPresence());
-						friends.put(contact.getJid().getLocal(), friend);
+					}
+				} else {
+					if(contact != null) {
+						if(friends.containsKey(contact.getJid().getLocal())) {
+							Friend f = friends.get(contact.getJid().getLocal());
+							LoLStatus oldStatus = f.updatePresence(e.getPresence());
+							
+							synchronized(friendStatusListeners) {
+								friendStatusListeners.forEach(listener -> {
+									listener.onFriendStatusChange(new FriendStatusEvent(f, oldStatus));
+								});
+							}
+						} else {
+							Friend friend = new Friend(this, contact);
+							friend.updatePresence(e.getPresence());
+							friends.put(contact.getJid().getLocal(), friend);
+						}
 					}
 				}
 			});
@@ -189,6 +258,7 @@ public class LoLXMPPAPI {
 		});
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void notifyApiReady() {
 		if(delaying || ready) {
 			return;
@@ -196,7 +266,7 @@ public class LoLXMPPAPI {
 		
 		delaying = true;
 		
-		selfPresence = new UserPresence(xmppClient.getConnectedResource().getLocal());
+		selfPresence = new UserPresence(xmppClient.getConnectedResource());
 		selfPresence.setChatStatus(ChatStatus.CHAT);
 		
 		LoLStatus selfStatus = selfPresence.getLoLStatus();
@@ -227,6 +297,15 @@ public class LoLXMPPAPI {
 				}
 				
 				readyListeners.clear();
+				
+				synchronized(pendingapprove) {
+					for(FriendRequest approveRequest : pendingapprove) {
+						for(FriendRequestListener listener : friendRequestListeners) {
+							listener.onFriendRequest(approveRequest);
+						}
+					}
+				}
+				
 				ready = true;
 			};
 		}.start();
@@ -246,6 +325,18 @@ public class LoLXMPPAPI {
 	
 	public void addFriendLeaveListener(FriendLeaveListener listener) {
 		friendLeaveListeners.add(listener);
+	}
+	
+	public void addFriendRemoveListener(FriendRemoveListener listener) {
+		friendRemoveListeners.add(listener);
+	}
+	
+	public void addFriendAddListener(FriendAddListener listener) {
+		friendAddListeners.add(listener);
+	}
+	
+	public void addFriendRequestListener(FriendRequestListener listener) {
+		friendRequestListeners.add(listener);
 	}
 	
 	private Friend getFriendByJid(Jid jid) {
@@ -336,13 +427,21 @@ public class LoLXMPPAPI {
 		return xmppClient;
 	}
 	
-	protected void handleFriendJoinEvent(Friend friend) {
+	/**
+	 * @deprecated Only for API purposes.
+	 */
+	@Deprecated
+	public void handleFriendJoinEvent(Friend friend) {
 		for(FriendJoinListener listener : friendJoinListeners) {
 			listener.onFriendJoin(friend);
 		}
 	}
 	
-	protected void handleFriendLeaveEvent(Friend friend) {
+	/**
+	 * @deprecated Only for API purposes.
+	 */
+	@Deprecated
+	public void handleFriendLeaveEvent(Friend friend) {
 		for(FriendLeaveListener listener : friendLeaveListeners) {
 			listener.onFriendLeave(friend);
 		}
@@ -381,6 +480,29 @@ public class LoLXMPPAPI {
 		toSend.setStatus(presence.getLoLStatus().toXML());
 		
 		xmppClient.sendPresence(toSend);
+	}
+	
+	public void removeFriend(BasicPresence friend) {
+		RosterManager roster = xmppClient.getManager(RosterManager.class);
+		roster.removeContact(friend.getXMPPJid());
+	}
+	
+	public Collection<FriendRequest> getPendingApproveRequests() {
+		return new ArrayList<FriendRequest>(pendingapprove);
+	}
+	
+	/**
+	 * @deprecated Only for API purposes.
+	 */
+	@Deprecated
+	public void removeRequest(FriendRequest friendRequest) {
+		pendingapprove.remove(friendRequest);
+	}
+	
+	public void sendRequest(long summonerID) {
+		PresenceManager pm = xmppClient.getManager(PresenceManager.class);
+		Jid selfJid = selfPresence.getXMPPJid();
+		pm.requestSubscription(Jid.ofLocalAndDomain("sum" + summonerID, selfJid.getDomain()), selfPresence.getLoLStatus().toXML());
 	}
 
 }

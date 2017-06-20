@@ -16,10 +16,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api;
+package lolxmpp.api.presence;
 
 import com.google.gson.JsonObject;
 
+import lolxmpp.api.LoLStatus;
+import lolxmpp.api.LoLXMPPAPI;
 import lolxmpp.api.data.GameInfo;
 import lolxmpp.api.enums.ChatStatus;
 import lolxmpp.api.enums.GameStatus;
@@ -32,17 +34,25 @@ import rocks.xmpp.im.roster.model.Contact;
 
 public class Friend extends UserPresence {
 	
-	private Contact contact;
-	private LoLXMPPAPI api;
-	private boolean isOnline = false;
+	private Contact		contact;
+	private LoLXMPPAPI	api;
+	private boolean		isOnline	= false;
 
-	protected Friend(LoLXMPPAPI api, Contact contact) {
-		super(contact.getJid().getLocal(), contact.getName());
+	/**
+	 * @deprecated Only for API purposes.
+	 */
+	@Deprecated
+	public Friend(LoLXMPPAPI api, Contact contact) {
+		super(contact.getJid(), contact.getName());
 		this.contact = contact;
 		this.api = api;
 	}
 
-	protected LoLStatus updatePresence(Presence presence) {
+	/**
+	 * @deprecated Only for API purposes.
+	 */
+	@Deprecated
+	public LoLStatus updatePresence(Presence presence) {
 		LoLStatus oldLoLStatus = (LoLStatus) getLoLStatus().clone();
 		
 		if(presence.isAvailable()) {
@@ -114,5 +124,9 @@ public class Friend extends UserPresence {
 		}
 		
 		return null;
+	}
+	
+	public void removeFriend() {
+		api.removeFriend(this);
 	}
 }

@@ -20,13 +20,13 @@ package lolxmpp.api.listeners.object;
 
 import java.util.List;
 
-import lolxmpp.api.Friend;
+import lolxmpp.api.presence.Friend;
 import rocks.xmpp.core.stanza.model.Text;
 
 public class MessageEvent {
 	
-	private Friend f;
-	private String fullMessage = "";
+	private Friend	f;
+	private String	fullMessage	= "";
 
 	public MessageEvent(Friend f, List<Text> bodies) {
 		bodies.forEach(text -> {

@@ -38,8 +38,8 @@ import lolxmpp.api.exceptions.APIException;
  */
 public class RiotAPI {
 	
-	private String key;
-	private ChatRegion region;
+	private String		key;
+	private ChatRegion	region;
 	
 	public RiotAPI(String key) {
 		this.key = key;
@@ -52,7 +52,7 @@ public class RiotAPI {
 	protected void setRegion(ChatRegion region) {
 		this.region = region;
 	}
-	
+
 	public JsonObject makeRequest(String apiPath) throws APIException {
 		String apiHost = region.apiHost();
 		String tryUrl = "https://" + apiHost + apiPath;
@@ -82,9 +82,6 @@ public class RiotAPI {
 		return new JsonObject();
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "RiotAPI[key=" + key + ",region=" + region.toString() + "]";

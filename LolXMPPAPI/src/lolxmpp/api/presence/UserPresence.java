@@ -16,31 +16,43 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api.listeners.object;
+package lolxmpp.api.presence;
 
 import lolxmpp.api.LoLStatus;
-import lolxmpp.api.presence.Friend;
+import lolxmpp.api.enums.ChatStatus;
+import rocks.xmpp.addr.Jid;
 
 /**
  * @author wirlie
  *
  */
-public class FriendStatusEvent {
-	
-	private LoLStatus	oldStatus;
-	private Friend		f;
-	
-	public FriendStatusEvent(Friend f, LoLStatus oldStatus) {
-		this.f = f;
-		this.oldStatus = oldStatus;
-	}
-	
-	public LoLStatus oldStatus() {
-		return oldStatus;
-	}
-	
-	public Friend getFriend() {
-		return f;
-	}
+public class UserPresence extends BasicPresence {
 
+	private ChatStatus	show		= ChatStatus.OFFLINE;
+	private LoLStatus	lolStatus	= new LoLStatus();
+
+	public UserPresence(Jid id) {
+		super(id, "Unknown Name");
+	}
+	
+	public UserPresence(Jid id, String name) {
+		super(id, name);
+	}
+	
+	public ChatStatus getChatStatus() {
+		return show;
+	}
+	
+	public LoLStatus getLoLStatus() {
+		return lolStatus;
+	}
+	
+	public void setChatStatus(ChatStatus status) {
+		this.show = status;
+	}
+	
+	public void setLoLStatus(LoLStatus status) {
+		this.lolStatus = status;
+	}
+	
 }

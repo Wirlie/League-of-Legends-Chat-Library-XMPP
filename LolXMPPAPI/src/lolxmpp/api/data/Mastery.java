@@ -42,15 +42,15 @@ import lolxmpp.api.exceptions.APIException;
  *
  */
 public class Mastery {
-	
-	transient private static Map<Long, BufferedImage> images = new HashMap<Long, BufferedImage>();
-	transient private static Map<Long, String> names = new HashMap<Long, String>();
-	transient private static Map<Long, String> masteryTree = new HashMap<Long, String>();
-	transient private static Map<Long, Integer> ranks = new HashMap<Long, Integer>();
-	transient private static Map<Long, String[]> descriptions = new HashMap<Long, String[]>();
-	
-	private long masteryId;
-	private int rank;
+
+	transient private static Map<Long, BufferedImage>	images			= new HashMap<Long, BufferedImage>();
+	transient private static Map<Long, String>			names			= new HashMap<Long, String>();
+	transient private static Map<Long, String>			masteryTree		= new HashMap<Long, String>();
+	transient private static Map<Long, Integer>			ranks			= new HashMap<Long, Integer>();
+	transient private static Map<Long, String[]>		descriptions	= new HashMap<Long, String[]>();
+
+	private long	masteryId;
+	private int		rank;
 	
 	/** @return The ID of the mastery */
 	public long getMasteryId() {

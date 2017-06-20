@@ -16,31 +16,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api.listeners.object;
+package lolxmpp.api.listeners;
 
-import lolxmpp.api.LoLStatus;
-import lolxmpp.api.presence.Friend;
+import lolxmpp.api.listeners.object.FriendRequest;
 
 /**
  * @author wirlie
  *
  */
-public class FriendStatusEvent {
-	
-	private LoLStatus	oldStatus;
-	private Friend		f;
-	
-	public FriendStatusEvent(Friend f, LoLStatus oldStatus) {
-		this.f = f;
-		this.oldStatus = oldStatus;
-	}
-	
-	public LoLStatus oldStatus() {
-		return oldStatus;
-	}
-	
-	public Friend getFriend() {
-		return f;
-	}
+@FunctionalInterface
+public interface FriendRequestListener {
 
+	public abstract void onFriendRequest(FriendRequest friend);
+	
 }

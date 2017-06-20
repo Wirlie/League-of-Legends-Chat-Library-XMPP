@@ -32,25 +32,25 @@ import lolxmpp.api.enums.GameQueueConfig;
  *
  */
 public class GameInfo {
-	/** The ID of the game  **/
-	private long gameId;
-	/** The game start time represented in epoch milliseconds  **/
-	private long gameStartTime;
-	/** The ID of the platform on which the game is being played  **/
-	private String platformId;
-	/** The game mode  **/
-	private String gameMode;
+	/** The ID of the game **/
+	private long						gameId;
+	/** The game start time represented in epoch milliseconds **/
+	private long						gameStartTime;
+	/** The ID of the platform on which the game is being played **/
+	private String						platformId;
+	/** The game mode **/
+	private String						gameMode;
 	/** The ID of the map **/
-	private long mapId;
-	/** The game type  **/
-	private String gameType;
+	private long						mapId;
+	/** The game type **/
+	private String						gameType;
 	/** The queue type. **/
-	private long gameQueueConfigId;
-	/** The participant information  **/
-	private List<GameParticipant> participants = new ArrayList<GameParticipant>();
-	/** Banned champion information  **/
-	private List<BannedChampionInfo> bannedChampions = new ArrayList<BannedChampionInfo>();
-	
+	private long						gameQueueConfigId;
+	/** The participant information **/
+	private List<GameParticipant>		participants	= new ArrayList<GameParticipant>();
+	/** Banned champion information **/
+	private List<BannedChampionInfo>	bannedChampions	= new ArrayList<BannedChampionInfo>();
+
 	private GameInfo() { }
 	
 	/** 
@@ -108,14 +108,14 @@ public class GameInfo {
 	public List<GameParticipant> getParticipants() {
 		return participants;
 	}
-	
+
 	/**
 	 * @return Banned champion information
 	 */
 	public List<BannedChampionInfo> getBannedChampions() {
 		return bannedChampions;
 	}
-	
+
 	@SuppressWarnings("javadoc")
 	public static GameInfo fromJson(String json) {
 		try {
@@ -126,27 +126,27 @@ public class GameInfo {
 			System.err.println("json: " + json);
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public static class GameParticipant {
-		private long profileIconId;
-		private long championId;
-		private String summonerName;
-		private boolean bot;
-		private long teamId;
-		private long spell2Id;
-		private long spell1Id;
-		private long summonerId;
-		private List<Rune> runes = new ArrayList<Rune>();
-		private List<Mastery> masteries = new ArrayList<Mastery>();
-		
-		/** @return The ID of the profile icon used by this participant  */
+		private long			profileIconId;
+		private long			championId;
+		private String			summonerName;
+		private boolean			bot;
+		private long			teamId;
+		private long			spell2Id;
+		private long			spell1Id;
+		private long			summonerId;
+		private List<Rune>		runes		= new ArrayList<Rune>();
+		private List<Mastery>	masteries	= new ArrayList<Mastery>();
+
+		/** @return The ID of the profile icon used by this participant */
 		public ProfileIcon getProfileIcon() {
 			return new ProfileIcon((int) profileIconId);
 		}
-		
+
 		/** @return The ID of the champion played by this participant  */
 		public long getChampionId() {
 			return championId;
@@ -194,9 +194,9 @@ public class GameInfo {
 	}
 	
 	public static class BannedChampionInfo {
-		private int pickTurn;
-		private long championId;
-		private long teamId;
+		private int		pickTurn;
+		private long	championId;
+		private long	teamId;
 		
 		/** @return The turn during which the champion was banned  */
 		public int getPickTurn() {

@@ -48,24 +48,24 @@ import lolxmpp.api.enums.Tier;
  */
 public class LoLStatus implements Cloneable {
 	
-	private GameStatus gameStatus = GameStatus.OUT_OF_GAME;
-	private Tier tier = Tier.UNRANKED;
-	private int rankedWins = 0;
-	private int rankedLosses = 0;
-	private String rankedLeagueName = null;
-	private Division rankedLeagueDivision = Division.NONE;
-	private Tier rankedLeagueTier = Tier.UNRANKED;
-	private QueueType rankedLeagueQueue = QueueType.NONE;
-	private QueueType gameQueueType = QueueType.NONE;
-	//is observable
-	private long timeStamp = 0L;
-	//map id
-	//skinname
-	//championid
-	private int profileIconId = 0;
-	private String statusMessage = null;
-	//skin variant
-	private int level = 0;
+	private GameStatus	gameStatus				= GameStatus.OUT_OF_GAME;
+	private Tier		tier					= Tier.UNRANKED;
+	private int			rankedWins				= 0;
+	private int			rankedLosses			= 0;
+	private String		rankedLeagueName		= null;
+	private Division	rankedLeagueDivision	= Division.NONE;
+	private Tier		rankedLeagueTier		= Tier.UNRANKED;
+	private QueueType	rankedLeagueQueue		= QueueType.NONE;
+	private QueueType	gameQueueType			= QueueType.NONE;
+	// is observable
+	private long		timeStamp				= 0L;
+	// map id
+	// skinname
+	// championid
+	private int			profileIconId			= 0;
+	private String		statusMessage			= null;
+	// skin variant
+	private int			level					= 0;
 	
 	private static enum XMLProperties {
 		GAME_STATUS("gameStatus"),

@@ -18,7 +18,7 @@
  */
 package lolxmpp.api.listeners;
 
-import lolxmpp.api.Friend;
+import lolxmpp.api.presence.Friend;
 
 /**
  * @author wirlie

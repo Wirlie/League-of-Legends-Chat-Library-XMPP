@@ -24,8 +24,8 @@ package lolxmpp.api.data;
  */
 public class Rune {
 	
-	private int count;
-	private long runeId;
+	private int		count;
+	private long	runeId;
 	
 	/** @return The count of this rune used by the participant */
 	public int getCount() {

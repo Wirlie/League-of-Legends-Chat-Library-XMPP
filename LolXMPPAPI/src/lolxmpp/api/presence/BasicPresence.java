@@ -16,32 +16,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package lolxmpp.api;
+package lolxmpp.api.presence;
 
-import lolxmpp.api.enums.ChatStatus;
+import rocks.xmpp.addr.Jid;
 
 /**
  * @author wirlie
  *
  */
-public class UserPresence {
-
-	private ChatStatus show = ChatStatus.OFFLINE;
-	private LoLStatus lolStatus = new LoLStatus();
-	private String presenceId;
-	private String name;
-
-	public UserPresence(String id) {
-		this.presenceId = id;
-		this.name = "Unknown Name";
+public class BasicPresence {
+	
+	private String	name;
+	private Jid		jid;
+	
+	public BasicPresence(Jid jid) {
+		this.jid = jid;
 	}
 	
-	public UserPresence(String id, String name) {
-		this.presenceId = id;
-		this.name = name;
-	}
-	
-	protected void setName(String name) {
+	public BasicPresence(Jid jid, String name) {
+		this.jid = jid;
 		this.name = name;
 	}
 	
@@ -49,36 +42,32 @@ public class UserPresence {
 		return name;
 	}
 	
-	public String getId() {
-		return presenceId;
+	/**
+	 * @deprecated Only for API purposes.
+	 */
+	@Deprecated
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	public long getSummonerId() {
-		String parse = presenceId.replace("sum", "");
+		String parse = jid.getLocal().replace("sum", "");
 		try {
 			return Long.parseLong(parse);
 		} catch (NumberFormatException e) {
-			System.err.println("Error parsing summoner ID, invalid long: " + parse + " from full id: " + presenceId);
+			System.err.println("Error parsing summoner ID, invalid long: " + parse + " from full id: " + jid);
 			e.printStackTrace();
 		}
 		
 		return -1;
 	}
 	
-	public ChatStatus getChatStatus() {
-		return show;
+	public String getId() {
+		return jid.getLocal();
 	}
 	
-	public LoLStatus getLoLStatus() {
-		return lolStatus;
+	public Jid getXMPPJid() {
+		return jid;
 	}
-	
-	public void setChatStatus(ChatStatus status) {
-		this.show = status;
-	}
-	
-	public void setLoLStatus(LoLStatus status) {
-		this.lolStatus = status;
-	}
-	
+
 }
